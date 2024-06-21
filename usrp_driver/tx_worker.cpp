@@ -2,7 +2,8 @@
 #include <vector>
 
 #include <uhd/usrp/multi_usrp.hpp>
-#include <uhd/utils/thread_priority.hpp>
+//#include <uhd/utils/thread_priority.hpp>
+#include <uhd/utils/thread.hpp>
 #include <uhd/utils/safe_main.hpp>
 #include <uhd/utils/static.hpp>
 #include <uhd/exception.hpp>
@@ -126,7 +127,7 @@ void usrp_tx_worker(
     //    if(DEBUG && sample_idx) std::cout << boost::format(" Sent packet:  idx: %i") % sample_idx << std::endl;
         nacc_samples += ntx_samples;
     }
-    DEBUG_PRINT("TX_WORKER tx_burst_length_samples=%i\n", tx_burst_length_samples );
+    DEBUG_PRINT("TX_WORKER tx_burst_length_samples=%li\n", tx_burst_length_samples );
 
     md.end_of_burst = true;
     tx_stream->send(&pulse_samples[0], 0, md, timeout);

@@ -49,7 +49,7 @@ SIDEA = 0 # just for compatibility of shm names
 RXDIR = 'rx'
 TXDIR = 'tx'
 
-DEBUG = False
+DEBUG = True
 verbose = 1
 
 C = 3e8

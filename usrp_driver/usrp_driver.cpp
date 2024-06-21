@@ -28,12 +28,13 @@
 
 #include <argtable2.h>
 #include <uhd/types/tune_request.hpp>
-#include <uhd/utils/thread_priority.hpp>
+//#include <uhd/utils/thread_priority.hpp>
+#include <uhd/utils/thread.hpp>
 #include <uhd/utils/safe_main.hpp>
 #include <uhd/usrp/multi_usrp.hpp>
 #include <uhd/transport/udp_simple.hpp>
 #include <uhd/exception.hpp>
-#include <uhd/utils/msg.hpp>
+//#include <uhd/utils/msg.hpp>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
@@ -121,9 +122,9 @@ int32_t driversock = 0;
 int32_t driverconn = 0;
 int32_t verbose = 0;
 
-void uhd_term_message_handler(uhd::msg::type_t type, const std::string &msg){
-    ;
-}
+//void uhd_term_message_handler(uhd::msg::type_t type, const std::string &msg){
+//    ;
+//}
 
 void *open_sample_shm(int32_t ant, int32_t dir, int32_t side, int32_t swing, size_t shm_size) {
     void *pshm = NULL;
@@ -482,9 +483,9 @@ int UHD_SAFE_MAIN(int argc, char *argv[]){
 
     DEBUG_PRINT("usrp_driver debug mode enabled\n");
 
-    if (SUPRESS_UHD_PRINTS) {
-        uhd::msg::register_handler(&uhd_term_message_handler);
-    }
+    //if (SUPRESS_UHD_PRINTS) {
+    //    uhd::msg::register_handler(&uhd_term_message_handler);
+    //}
 
     nerrors = arg_parse(argc,argv,argtable);
     if (nerrors > 0) {
@@ -557,6 +558,8 @@ int UHD_SAFE_MAIN(int argc, char *argv[]){
     usrpargs = "addr0=" + usrpargs + ",master_clock_rate=200.0e6";
 //    usrpargs = "addr0=" + usrpargs + ",master_clock_rate=200.0e6,recv_frame_size=50000000";
     uhd::usrp::multi_usrp::sptr usrp = uhd::usrp::multi_usrp::make(usrpargs);
+    usrp->set_rx_subdev_spec(uhd::usrp::subdev_spec_t("A:0 B:0"));
+    usrp->set_tx_subdev_spec(uhd::usrp::subdev_spec_t("A:0 B:0"));
   //  usrp->set_rx_subdev_spec(uhd::usrp::subdev_spec_t("A:A B:A"));
   //  usrp->set_tx_subdev_spec(uhd::usrp::subdev_spec_t("A:A B:A"));
     boost::this_thread::sleep(boost::posix_time::seconds(SETUP_WAIT));
@@ -714,7 +717,7 @@ int UHD_SAFE_MAIN(int argc, char *argv[]){
                     nSamples_tx_pulse        = sock_get_uint64(driverconn);
                     nSamples_rx_total        = nSamples_rx + nSamples_pause_after_rx + nSamples_auto_clear_freq;
 
-                    DEBUG_PRINT("USRP_SETUP number of requested rx samples: %d + %d pause + %d auto clear freq\n", (uint32_t) nSamples_rx, nSamples_pause_after_rx, nSamples_auto_clear_freq);
+                    DEBUG_PRINT("USRP_SETUP number of requested rx samples: %d + %ld pause + %ld auto clear freq\n", (uint32_t) nSamples_rx, nSamples_pause_after_rx, nSamples_auto_clear_freq);
                     DEBUG_PRINT("USRP_SETUP number of requested tx samples per pulse: %d\n", (uint32_t) nSamples_tx_pulse);
                     DEBUG_PRINT("USRP_SETUP existing tx rate : %f (swing %d)\n", txrate, swing);
                     DEBUG_PRINT("USRP_SETUP requested tx rate: %f\n", txrate_new);
@@ -788,7 +791,7 @@ int UHD_SAFE_MAIN(int argc, char *argv[]){
                     size_t pulse_bytes = sizeof(std::complex<int16_t>) * nSamples_tx_pulse;
                     size_t number_of_pulses = pulse_time_offsets.size();
                     size_t num_samples_per_pulse_with_padding = nSamples_tx_pulse + 2*spb;
-                    DEBUG_PRINT("spb %d, pulse length %d samples, pulse with padding %d\n", spb, nSamples_tx_pulse, num_samples_per_pulse_with_padding);
+                    DEBUG_PRINT("spb %ld, pulse length %ld samples, pulse with padding %ld\n", spb, nSamples_tx_pulse, num_samples_per_pulse_with_padding);
 
                     // TODO unpack and pad tx sample
                     for (iSide = 0; iSide<nSides; iSide++) {
@@ -864,7 +867,7 @@ int UHD_SAFE_MAIN(int argc, char *argv[]){
                         size_t pulse_bytes = sizeof(std::complex<int16_t>) * nSamples_tx_pulse;
                         size_t number_of_pulses = pulse_time_offsets.size();
                         size_t num_samples_per_pulse_with_padding = nSamples_tx_pulse + 2*spb;
-                        DEBUG_PRINT("spb %d, pulse length %d samples, pulse with padding %d\n", spb, nSamples_tx_pulse, num_samples_per_pulse_with_padding);
+                        DEBUG_PRINT("spb %ld, pulse length %ld samples, pulse with padding %ld\n", spb, nSamples_tx_pulse, num_samples_per_pulse_with_padding);
 
 
                         // read in time for start of pulse sequence over socket
@@ -895,7 +898,7 @@ int UHD_SAFE_MAIN(int argc, char *argv[]){
                         float debugt = usrp->get_time_now().get_real_secs();
                         DEBUG_PRINT("USRP_DRIVER: spawning worker threads at usrp_time %2.4f\n", debugt);
 
-                        DEBUG_PRINT("TRIGGER_PULSE creating rx and tx worker threads on swing %d (nSamples_rx= %d + %d pause + %d auto clear freq )\n", swing,(int) nSamples_rx, nSamples_pause_after_rx, nSamples_auto_clear_freq);
+                        DEBUG_PRINT("TRIGGER_PULSE creating rx and tx worker threads on swing %d (nSamples_rx= %d + %ld pause + %ld auto clear freq )\n", swing,(int) nSamples_rx, nSamples_pause_after_rx, nSamples_auto_clear_freq);
                         // works fine with tx_worker and dio_worker, fails if rx_worker is enabled
                         uhd_threads.create_thread(boost::bind(usrp_rx_worker, usrp, rx_stream, &rx_data_buffer, nSamples_rx_total, rx_start_time, &rx_worker_status));
 
@@ -1069,7 +1072,7 @@ int UHD_SAFE_MAIN(int argc, char *argv[]){
 
                     iSide = 0;// TODO both sides!
                     if (auto_clear_freq_available) {
-                        DEBUG_PRINT("AUTOCLRFREQ samples sending %d samples for antenna %d...\n", rx_auto_clear_freq[iSide].size(),antennaVector[iSide]);
+                        DEBUG_PRINT("AUTOCLRFREQ samples sending %ld samples for antenna %d...\n", rx_auto_clear_freq[iSide].size(),antennaVector[iSide]);
                         sock_send_int32(driverconn, (int32_t) antennaVector[iSide]); 
                         sock_send_uint32(driverconn, (uint32_t) rx_auto_clear_freq[iSide].size());
 

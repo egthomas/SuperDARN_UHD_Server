@@ -49,7 +49,7 @@ RMSG_FAILURE = -1
 RADAR_STATE_TIME = .0001
 CHANNEL_STATE_TIMEOUT = 12000
 # TODO: move this out to a config file
-RESTRICT_FILE = '/home/radar/repos/SuperDARN_MSI_ROS/linux/home/radar/ros.3.6/tables/superdarn/site/site.mcm/restrict.dat.inst'
+RESTRICT_FILE = '/home/egthomas/repos/rst-ros/tables/superdarn/site/site.cve/restrict.dat.cve'
 nSwings = 2 
 
 debug = False 
@@ -98,11 +98,13 @@ class integrationTimeManager():
           overhead_time = 0.4
       elif int_time == 2.9:
          overhead_time = 0.05
+      elif int_time == 2.85:
+         overhead_time = 0.05
       elif int_time == 1:
          overhead_time = 0.05 # TODO adjust and test
       else:
-         overhead_time = 0.5
-         error_str = "No overhead time defined for {} s, using 0.7  please add it...".format(int_time)
+         overhead_time = 0.05
+         error_str = "No overhead time defined for {} s, using 0.05  please add it...".format(int_time)
          self.RHM.logger.error(error_str)
 #         raise ValueError(error_str)
       return overhead_time
@@ -1824,13 +1826,13 @@ class RadarHardwareManager:
             offset = int(np.round(900e-6*bb_samplingRate))
             channel = RHM.channels[0]
             pulse_offsets = RHM.all_possible_integration_period_pulse_sample_offsets
-            pulse_offsets = np.array(np.round(pulse_offsets/RHM.usrp_rf_rx_rate*bb_samplingRate), dtype=np.int)
+            pulse_offsets = np.array(np.round(pulse_offsets/RHM.usrp_rf_rx_rate*bb_samplingRate), dtype=np.int_)
             pulse_offsets -= pulse_offsets[0]
             rx_idx = []
             for iPulse in range(len(pulse_offsets)-1):
                 rx_idx += range(pulse_offsets[iPulse]+offset, pulse_offsets[iPulse+1]-offset)
             rx_idx += range(pulse_offsets[iPulse+1]+offset, nSamples)
-            rx_idx = np.array(rx_idx, dtype=np.int)
+            rx_idx = np.array(rx_idx, dtype=np.int_)
             rx_idx = rx_idx[rx_idx<nSamples-1]
             if debugPlot:
                 import matplotlib.pyplot as plt
