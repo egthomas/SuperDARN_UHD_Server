@@ -49,7 +49,6 @@ RMSG_FAILURE = -1
 RADAR_STATE_TIME = .0001
 CHANNEL_STATE_TIMEOUT = 12000
 # TODO: move this out to a config file
-RESTRICT_FILE = '/home/egthomas/repos/rst-ros/tables/superdarn/site/site.cve/restrict.dat.cve'
 nSwings = 2 
 
 debug = False 
@@ -2438,6 +2437,8 @@ class RadarChannelHandler:
         exportList = []
         exportList = []
         exportList.append( version )
+        exportList.append( ST_ID )
+        exportList.append( channel.cnum )
         exportList.append( time_now.year )
         exportList.append( time_now.month )
         exportList.append( time_now.day )

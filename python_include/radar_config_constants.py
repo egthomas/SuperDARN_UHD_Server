@@ -1,5 +1,9 @@
 # TODO: all of these should be moved to a config file at some point..
 
+ST_ID = 207
+
+RESTRICT_FILE = '/home/egthomas/repos/rst-ros/tables/superdarn/site/site.cve/restrict.dat.cve'
+
 USRP_MASTER_CLOCK_FREQ = 200e6 # not all values are supported by the ettus UHD driver, changing this will require changing downconversion ratios
 
 # seconds of delay in usrp clock time at the start of an integration period before the first pulse
