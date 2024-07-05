@@ -2,12 +2,14 @@ OS:=$(shell uname -s)
 
 CCpp=g++
 CFLAGS=-c -Wall -pthread -std=c++0x -g3
-LFLAGS  = -L"../../iniparser/build" -L"${HOME}/repos/uhd/host/build/lib"
+LFLAGS=-L"../../iniparser/build" -L"${HOME}/repos/uhd/host/build/lib"
 common_libs=-lm -liniparser -lrt -luhd -lfftw3
 linux_libs=-lboost_thread -lboost_system -pthread -l argtable2 -lboost_date_time
-INCLUDES=-I"../include/" -I"include/" -I"../tsg/include" -I"../iniparser3.0b/src/" \
-	 -I"${HOME}/repos/uhd/host/include" -I"${HOME}/repos/uhd/host/include/uhd/types" -I"${HOME}/repos/uhd/host/include/uhd/usrp" \
-	 -I"${HOME}/repos/rst-ros/include/base" -I"${HOME}/repos/rst-ros/include/superdarn"
+INCLUDES=-I"${HOME}/repos/uhd/host/include" \
+	 -I"${HOME}/repos/uhd/host/include/uhd/types" \
+	 -I"${HOME}/repos/uhd/host/include/uhd/usrp" \
+	 -I"${HOME}/repos/rst-ros/include/base" \
+	 -I"${HOME}/repos/rst-ros/include/superdarn"
 
 CPP_SOURCES=usrp_driver.cpp dio.cpp tx_worker.cpp  rx_worker.cpp usrp_utils.cpp
 
@@ -31,4 +33,4 @@ debug:
 	gdb --args $(EXECUTABLE) --host usrp1 --ant 1 --intclk
 
 cudebug:
-	 cuda-gdb --args python3 -m pycuda.debug cuda_driver.py 
+	cuda-gdb --args python3 -m pycuda.debug cuda_driver.py
