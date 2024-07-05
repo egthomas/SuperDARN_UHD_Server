@@ -762,7 +762,7 @@ def main():
       elif firstArg.lower() in ["network", "networktool", "net"]:
            start_network_tool()  
       elif firstArg == "start":
-         if nArguments == 1 or inputArg[1].lower == "all":
+         if nArguments == 1 or inputArg[1].lower() == "all":
             myPrint("Starting all...")
             start_cuda_driver()
             start_usrp_driver()
@@ -800,7 +800,7 @@ def main():
             show_help()
    
       elif firstArg == "restart":
-         if nArguments == 1 or inputArg[1].lower == "all":
+         if nArguments == 1 or inputArg[1].lower() == "all":
             restart_all()
 
          elif inputArg[1].lower() in ["usrp_driver", "usrps"]:
@@ -827,7 +827,7 @@ def main():
    
    
       elif firstArg == "stop":
-         if nArguments == 1 or inputArg[1].lower == "all":
+         if nArguments == 1 or inputArg[1].lower() == "all":
             myPrint("Stopping all...")
             remote_stop_all()
             stop_watchdog()
