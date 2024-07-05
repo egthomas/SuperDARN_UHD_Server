@@ -11,7 +11,7 @@ INCLUDES=-I"${HOME}/repos/uhd/host/include" \
 	 -I"${HOME}/repos/rst-ros/include/base" \
 	 -I"${HOME}/repos/rst-ros/include/superdarn"
 
-CPP_SOURCES=usrp_driver.cpp dio.cpp tx_worker.cpp  rx_worker.cpp usrp_utils.cpp
+CPP_SOURCES=usrp_driver.cpp dio.cpp tx_worker.cpp rx_worker.cpp usrp_utils.cpp
 
 CPP_OBJECTS=$(CPP_SOURCES:.cpp=.o)
 
