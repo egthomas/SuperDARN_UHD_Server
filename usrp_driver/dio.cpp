@@ -262,7 +262,7 @@ void send_timing_for_sequence(
 
     char bank_name[4];
     sprintf(bank_name, "FP0");
-    int iSide;
+    //int iSide;
     time_t current_time;
     struct tm *gmt;
 
