@@ -28,13 +28,11 @@
 
 #include <argtable2.h>
 #include <uhd/types/tune_request.hpp>
-//#include <uhd/utils/thread_priority.hpp>
 #include <uhd/utils/thread.hpp>
 #include <uhd/utils/safe_main.hpp>
 #include <uhd/usrp/multi_usrp.hpp>
 #include <uhd/transport/udp_simple.hpp>
 #include <uhd/exception.hpp>
-//#include <uhd/utils/msg.hpp>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
@@ -121,10 +119,6 @@ namespace po = boost::program_options;
 int32_t driversock = 0;
 int32_t driverconn = 0;
 int32_t verbose = 0;
-
-//void uhd_term_message_handler(uhd::msg::type_t type, const std::string &msg){
-//    ;
-//}
 
 void *open_sample_shm(int32_t ant, int32_t dir, int32_t side, int32_t swing, size_t shm_size) {
     void *pshm = NULL;
@@ -482,10 +476,6 @@ int UHD_SAFE_MAIN(int argc, char *argv[]){
     double txrate_new, rxrate_new, txfreq_new, rxfreq_new;
 
     DEBUG_PRINT("usrp_driver debug mode enabled\n");
-
-    //if (SUPRESS_UHD_PRINTS) {
-    //    uhd::msg::register_handler(&uhd_term_message_handler);
-    //}
 
     nerrors = arg_parse(argc,argv,argtable);
     if (nerrors > 0) {
