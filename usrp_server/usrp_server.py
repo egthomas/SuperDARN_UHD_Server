@@ -97,14 +97,12 @@ class integrationTimeManager():
           overhead_time = 0.4
       elif int_time == 2.9:
          overhead_time = 0.05
-      elif int_time == 2.85:
-         overhead_time = 0.05
       elif int_time == 1:
          overhead_time = 0.05 # TODO adjust and test
       else:
          overhead_time = 0.05
          error_str = "No overhead time defined for {} s, using 0.05  please add it...".format(int_time)
-         self.RHM.logger.error(error_str)
+         self.RHM.logger.warning(error_str)
 #         raise ValueError(error_str)
       return overhead_time
     
