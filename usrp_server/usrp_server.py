@@ -2851,6 +2851,9 @@ class RadarChannelHandler:
     
     #@timeit
     def SetRadarChanHandler(self, rmsg):
+        self.stid = recv_dtype(self.conn, np.int32)
+        data_length = recv_dtype(self.conn, np.int32)
+        self.ststr = recv_dtype(self.conn, str, nitems=data_length)
         self.rnum = recv_dtype(self.conn, np.int32)
         self.cnum = recv_dtype(self.conn, np.int32)
 
