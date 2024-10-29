@@ -2435,7 +2435,7 @@ class RadarChannelHandler:
         exportList = []
         exportList = []
         exportList.append( version )
-        exportList.append( ST_ID )
+        exportList.append( channel.stid )
         exportList.append( channel.cnum )
         exportList.append( time_now.year )
         exportList.append( time_now.month )
