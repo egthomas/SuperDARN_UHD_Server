@@ -2430,7 +2430,7 @@ class RadarChannelHandler:
         if not os.path.isdir(savePath):
             os.mkdir(savePath)
                     
-        fileName = '{:04d}{:02d}{:02d}{:02d}{:02d}.{:d}.iraw.{:c}'.format(time_now.year, time_now.month, time_now.day, time_now.hour, time_now.minute, channel.rnum, 96+channel.cnum)
+        fileName = '{:04d}{:02d}{:02d}.{:02d}{:02d}.{}.{:c}.iraw'.format(time_now.year, time_now.month, time_now.day, time_now.hour, time_now.minute, channel.ststr, 96+channel.cnum)
 
         exportList = []
         exportList = []
@@ -2853,7 +2853,8 @@ class RadarChannelHandler:
     def SetRadarChanHandler(self, rmsg):
         self.stid = recv_dtype(self.conn, np.int32)
         data_length = recv_dtype(self.conn, np.int32)
-        self.ststr = recv_dtype(self.conn, str, nitems=data_length)
+        temp = recv_dtype(self.conn, str, nitems=data_length)
+        self.ststr = temp.decode("utf-8").strip('b"').rstrip('\x00')
         self.rnum = recv_dtype(self.conn, np.int32)
         self.cnum = recv_dtype(self.conn, np.int32)
 
