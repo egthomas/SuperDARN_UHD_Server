@@ -2019,7 +2019,7 @@ class RadarChannelHandler:
         self.cnum = 'unknown'
         self.resultDict_list = []
 
-        self.scanManager  = scanManager(read_restrict_file(RESTRICT_FILE), self)
+  ###      self.scanManager  = scanManager(read_restrict_file(RESTRICT_FILE), self)
   ###      self.scanManager.get_clr_freq_raw_data = self.parent_RadarHardwareManager.clearFreqRawDataManager.get_raw_data
         self.swingManager = parent_RadarHardwareManager.swingManager # reference to global swingManager of RadarHardwareManager
         self.triggered_swing_list = []
@@ -2865,6 +2865,9 @@ class RadarChannelHandler:
         
         self.ctrlprm_struct.set_data('channel', self.cnum)
         self.ctrlprm_struct.set_data('radar',  self.rnum)
+
+        restrict_file = '{}/site.{}/restrict.dat.{}'.format(os.environ['SD_SITE_PATH'], self.ststr, self.ststr)
+        self.scanManager = scanManager(read_restrict_file(restrict_file), self)
 
         # TODO: how to handle channel contention?
         # self.logger.name = "ChManager {}".format(self.cnum)
