@@ -890,7 +890,6 @@ class ClearFrequencyService():
             data, and requests server to process new data. When process is 
             terminated, the try/finally block cleans up.
         """
-
         input_data = [
             raw_samples, 
             clr_range, 
@@ -991,7 +990,7 @@ class ClearFrequencyService():
                 # Write Site ID (SID)
                 print(f"[Frequency Client] Data Write Progress: {self.shm_objects[9]['name']}")
                 print(f"    len of objects list is {len(self.shm_objects)}")
-                self.write_data(self.shm_objects[9], sid, 'sid')
+                self.write_data(self.shm_objects[9], self.sid, 'sid')
                     
                 self.sl_init['sem'].release()
                 self.sf_init['sem'].release()
