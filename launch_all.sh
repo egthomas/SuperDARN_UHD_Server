@@ -19,6 +19,9 @@ fitacfwrite -r mcm.a -lp 41103 -ep 41000 &
 rtserver -rp 41104 -ep 41000 -tp 1401 & # ch 4
 #/home/radar/ros.3.6/bin/rtserver -rp 42104 -ep 42000 -tp 1402 & # ch 3
 
+gcc -o server src/service/raw_samples/samples_server.c -lrt -pthread -lfftw3 -lm & 
+
+
 
 python3 /home/radar/repos/SuperDARN_UHD_Server/tools/srr_watchdog.py server &
 
