@@ -32,7 +32,7 @@
 #define TEST_CLR_RANGE 1
 // TODO: Add flag to record spectrum over time
 
-#include "../utils/misc_read_writes.c" // Pulls Debug Testing Data
+#include "misc_read_writes.c" // Pulls Debug Testing Data
 #include "clear_freq_search.h"
 
 // TODO: Pass in clr_freq_range via restrict actual file

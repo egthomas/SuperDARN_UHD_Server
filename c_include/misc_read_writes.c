@@ -7,8 +7,8 @@
 // #include <cblas.h>      // Matrix Multi library
 // #include <utils/phasing_utils.c>
 #include <string.h>
-#include "../utils/ini_parser/ini.c"
-#include "../utils/read_config.c"
+#include "ini_parser.c"
+#include "read_config.c"
 #include <time.h>
 
 

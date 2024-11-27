@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "ini_parser/ini.h"
+#include "ini_parser.h"
 
 typedef struct {
     int radar_stid;

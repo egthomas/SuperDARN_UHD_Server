@@ -11,7 +11,7 @@
 #include <fftw3.h>      // FFT transform library
 #include <signal.h>
 #include <time.h>
-#include "../clear_freq_search.c"
+#include "clear_freq_search.c"
 
 
 
