@@ -11,15 +11,6 @@
 #include "read_config.c"
 #include <time.h>
 
-
-#ifndef TEST_SAMPLES
-#define TEST_SAMPLES 0
-#endif
-
-#ifndef TEST_CLR_RANGE
-#define TEST_CLR_RANGE 0
-#endif
-
 #ifndef CLR_BANDS_MAX
 #define CLR_BANDS_MAX 6
 #endif
@@ -176,7 +167,7 @@ void write_sample_mag_csv(char *filename, int **raw_samples_mag, double *freq_ve
  * @param  ***raw_samples:      14x2500 complex sample array
  * @retval None
  */
-void read_input_data(const char *filename, sample_meta_data *meta_data, double **clear_freq_range, fftw_complex ***raw_samples) {
+void read_input_data(const char *filename, sample_meta_data *meta_data, double **clear_freq_range, fftw_complex ***raw_samples, int test_clr_range, int test_samples) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         perror("Error opening file");
@@ -191,7 +182,7 @@ void read_input_data(const char *filename, sample_meta_data *meta_data, double *
         if (sscanf(line, "usrp_rf_rate: %d", &meta_data->usrp_rf_rate) == 1) continue;
         // if (sscanf(line, "usrp_fcenter: %d", &meta_data->usrp_fcenter) == 1) continue;
         // if (sscanf(line, "x_spacing: %lf", &meta_data->x_spacing) == 1) continue;
-        // if (strncmp(line, "clear_freq_range:", 15) == 0 && TEST_CLR_RANGE) {
+        // if (strncmp(line, "clear_freq_range:", 15) == 0 && test_clr_range) {
         //     clear_freq_range = realloc(clear_freq_range, 2 * sizeof(double));
         //     int i = 0;
         //     char *token = strtok(line + 16, ",");
@@ -222,7 +213,7 @@ void read_input_data(const char *filename, sample_meta_data *meta_data, double *
         }
 
         // Raw Sample Data
-        // if (strncmp(line, "raw_samples:", 12) == 0 && TEST_SAMPLES) {
+        // if (strncmp(line, "raw_samples:", 12) == 0 && test_samples) {
         //     printf("[Clear Freq Search] Aquiring test four_spectrums from pickle files...\n");
         //     // Allocate mem
         //     *raw_samples = (fftw_complex **)fftw_malloc(meta_data->num_antennas * sizeof(fftw_complex *));
