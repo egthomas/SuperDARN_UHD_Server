@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <math.h>
 #include <complex.h>
 #include <fftw3.h>      // FFT transform library
@@ -25,12 +26,14 @@
 #define GB_MULT 1.5         // Guard Band Multiplier (Transmission bandwidth * GB_MULT = clear_bw)
 
 
-// Debug Flags
+// Config and Debug Flags
 #define VERBOSE 0
 #define SPECTRAL_AVGING 1
 #define TEST_SAMPLES 0
 #define TEST_CLR_RANGE 1
-// TODO: Add flag to record spectrum over time
+
+// Config File Paths
+#define SPECTRAL_LOG_FILE "../save_spectra"
 
 #include "misc_read_writes.c" // Pulls Debug Testing Data
 #include "clear_freq_search.h"
@@ -505,11 +508,13 @@ void calc_clear_freq_on_raw_samples(fftw_complex **raw_samples, sample_meta_data
     // }      
     
 
-    // Debug: Save data to csv
-    // write_sample_mag_csv(sample_im_file, sample_im, freq_vector, meta_data);         // Used to check complex Samples after Beamforming; ...
-    // write_sample_mag_csv(sample_re_file, sample_re, freq_vector, meta_data);         //     Plot w/ sample_plot.py
-    write_spectrum_mag_csv(spectrum_file, avg_spectrum, freq_vector_avg, num_avg_samples);  // Spectrum after Spectrum FFT averaging; plot w/ spectrum_plot.py
-    write_clr_freq_csv(clr_freq_file, clr_bands);                                       // Used to plot Clear Freq Bands w/ spectrum_plot.clr_freq.py
+    // Save data to csv
+    if (access(SPECTRAL_LOG_FILE, F_OK) == 0) {
+        // write_sample_mag_csv(sample_im_file, sample_im, freq_vector, meta_data);             // Used to check complex Samples after Beamforming; ...
+        // write_sample_mag_csv(sample_re_file, sample_re, freq_vector, meta_data);             // Plot w/ sample_plot.py
+        write_spectrum_mag_csv(spectrum_file, avg_spectrum, freq_vector_avg, num_avg_samples);  // Spectrum after Spectrum FFT averaging; plot w/ spectrum_plot.py
+        write_clr_freq_csv(clr_freq_file, clr_bands);                                           // Used to plot Clear Freq Bands w/ spectrum_plot.clr_freq.py
+    } else printf("\'save_spectra\' not found. Not logging spectra nor clr_frequency.\n");
 
     printf("Finished Clear Freq Search!\n");
     
