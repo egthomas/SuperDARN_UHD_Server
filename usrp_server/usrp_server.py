@@ -1395,9 +1395,11 @@ class scanManager():
         print(f"smsep:      {int(self.channel.raw_export_data['smsep'])}")
         print(f"fcenter:    {int(metaData['usrp_fcenter'])}")
         print(f"beamNo:     {int(beamNo)}")
-        print(f"num_sample: { len(rawData[:3]) }")
+        print(f"num_sample: { len(rawData) }")
+        print(f"num_sample: { len(rawData) }")
 
-        self.clearFreqService.sendSamples(rawData[:3], clear_freq_range, int(metaData['usrp_fcenter']), int(beamNo), int(self.channel.raw_export_data['smsep']), meta_data=metaData)
+
+        self.clearFreqService.sendSamples(rawData, clear_freq_range, int(metaData['usrp_fcenter']), int(beamNo), int(self.channel.raw_export_data['smsep']), meta_data=metaData)
         
         self.logger.debug('end calc_clear_freq_on_raw_samples')
         if 'baseband_samplerate' in RHM.commonChannelParameter: 

@@ -21,7 +21,7 @@
 
 
 // Default Length of Variables (some dynamically change during runtime)
-#define SAMPLES_NUM     2500 //20000
+#define SAMPLES_NUM     20000
 #define ANTENNA_NUM     16
 #define SAMPLE_TIME     3                   // Time per Sample (in seconds)
 #define STORAGE_TIME    60                  // Total time per Sample Storage Batch (in seconds)
@@ -720,8 +720,8 @@ int main() {
                 // Default: Get lab testing restrict file
                 else {
                     printf("\n[Frequency Server] ERROR: Parameter \'site_id\' is missing or set to a \"lab\" setting!\n");
-                    printf("[Frequency Server] Using restrict.dat.inst in Freq_Server/utils/misc_param/\n\n");
-                    restrict_file = "utils/misc_param/restrict.dat.inst";               // File path for lab testing
+                    printf("[Frequency Server] Using restrict.dat.inst in c_include/\n\n");
+                    restrict_file = "restrict.dat.inst";               // File path for lab testing
                 }
                 read_restrict(restrict_file, restricted_freq, &restricted_num);
             }
