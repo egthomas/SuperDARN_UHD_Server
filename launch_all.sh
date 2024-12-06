@@ -17,6 +17,8 @@ fitacfwrite -lp 41103 -ep 41000 -c a &
 rtserver -rp 41104 -ep 41000 -tp 1024 & # ch 1
 #rtserver -rp 42104 -ep 42000 -tp 1025 & # ch 2
 
+# gcc -o cf_server c_include/clear_frequency_server.c -lrt -pthread -lfftw3 -lm &
+# cf_server
 
 python3 /home/radar_user/repos/SuperDARN_UHD_Server/tools/srr_watchdog.py server &
 
