@@ -371,8 +371,8 @@ void find_clear_freqs(double *spectrum, sample_meta_data meta_data, double delta
 
 // HACK apply efficient matrix multi via cblas_dgemm
 void calc_clear_freq_on_raw_samples(fftw_complex **raw_samples, sample_meta_data *meta_data, freq_band *restricted_bands, int restricted_num, int *clear_freq_range, double beam_angle, double smsep, freq_band *clr_bands) {
-    char *spectrum_file = "../Freq_Server/utils/csv_dump/fft_spectrum/fft_spectrum.%s.csv";
-    char *clr_freq_file = "../Freq_Server/utils/csv_dump/clr_freq.csv";
+    char *spectrum_file = "log/fft_spectrum/fft_spectrum.%s.csv";
+    char *clr_freq_file = "log/clr_freq/clr_freq.csv";
     char *sample_re_file = "../Freq_Server/utils/csv_dump/samples/sample_re.csv";
     char *sample_im_file = "../Freq_Server/utils/csv_dump/samples/sample_im.csv";
     int **sample_re = NULL;

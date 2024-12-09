@@ -92,11 +92,10 @@ void write_spectrum_mag_csv(char *filename, double *spectrum, double *freq_vecto
     strftime(timestamp, buffer_size, "%Y.%m.%d_%H:%M:%S", time_info);
     snprintf(name, sizeof(name), filename, timestamp);
 
-    printf("!!!!!!!!!! %s\n", timestamp);
-
     FILE *file = fopen(name, "w");
     if (file == NULL) {
         perror("Error opening file for writing");
+        printf("!!!!!!!!!! %s\n", name);
         exit(EXIT_FAILURE);
     }
     fprintf(file, "Frequency,Power\n");
@@ -112,6 +111,7 @@ void write_clr_freq_csv(char *filename, freq_band *clr_bands) {
     FILE *file = fopen(filename, "w");
     if (file == NULL) {
         perror("Error opening file for writing");
+        printf("!!!!!!!!!! %s\n", filename);
         exit(EXIT_FAILURE);
     }
 
@@ -287,7 +287,8 @@ void read_restrict(char *filepath, freq_band *restricted_freq, int *restricted_n
 
             // Reallocate Mem if exceeded
             if (*restricted_num < i) {
-                restricted_freq = (freq_band *) malloc(i * sizeof(freq_band));
+                i++;
+                restricted_freq = (freq_band *) malloc((*restricted_num * 2) * sizeof(freq_band));
                 *restricted_num = i;
                 if (restricted_freq == NULL) {
                     perror("Error allocating memory for restricted_freq");
@@ -300,6 +301,13 @@ void read_restrict(char *filepath, freq_band *restricted_freq, int *restricted_n
             // printf("Restricted[%d]: %d -- %d\n", i, restricted_freq[i].f_start, restricted_freq[i].f_end);
             i++;
         }
+    }
+    
+    restricted_freq = (freq_band *) malloc(i * sizeof(freq_band));
+    *restricted_num = i;
+    if (restricted_freq == NULL) {
+        perror("Error allocating memory for restricted_freq");
+        exit(EXIT_FAILURE);
     }
     
     fclose(file);

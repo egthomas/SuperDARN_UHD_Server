@@ -385,7 +385,7 @@ void write_clr_log_csv(freq_band **clr_storage, int clr_num) {
     time(&raw_time);
     time_info = localtime(&raw_time);
     strftime(timestamp, buffer_size, "%Y.%m.%d_%H:%M:%S", time_info);
-    snprintf(name, sizeof(name), "utils/csv_dump/clr_log/clrlog_%s.csv", timestamp);
+    snprintf(name, sizeof(name), "log/clr_freq/clrlog_%s.csv", timestamp);
 
     // Generate clear log file
     FILE *file = fopen(name, "w");
@@ -721,7 +721,7 @@ int main() {
                 else {
                     printf("\n[Frequency Server] ERROR: Parameter \'site_id\' is missing or set to a \"lab\" setting!\n");
                     printf("[Frequency Server] Using restrict.dat.inst in c_include/\n\n");
-                    restrict_file = "restrict.dat.inst";               // File path for lab testing
+                    restrict_file = "/home/radar/repos/SuperDARN_MSI_ROS/linux/home/radar/ros.3.6/tables/superdarn/site/site.mcm/restrict.dat.inst";               // File path for lab testing
                 }
                 read_restrict(restrict_file, restricted_freq, &restricted_num);
             }

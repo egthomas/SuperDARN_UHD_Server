@@ -20,7 +20,7 @@ rtserver -rp 41104 -ep 41000 -tp 1401 & # ch 4
 #/home/radar/ros.3.6/bin/rtserver -rp 42104 -ep 42000 -tp 1402 & # ch 3
 
 # gcc -o cf_server c_include/clear_frequency_server.c -lrt -pthread -lfftw3 -lm & 
-# cf_server 
+cf_server &
 
 
 python3 /home/radar/repos/SuperDARN_UHD_Server/tools/srr_watchdog.py server &
