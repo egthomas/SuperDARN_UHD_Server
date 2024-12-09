@@ -712,16 +712,15 @@ int main() {
                 // Get site specific restrict file
                 if (strcmp(new_site_id,"lab") != 0) {
                     printf("[Frequency Server] Using restrict.dat.inst in site_id\n\n");
-                    // Typical File path is ...
-                    // "/home/radar/repos/SuperDARN_MSI_ROS/linux/home/radar/ros.3.6/tables/superdarn/site/site.mcm/restrict.dat.mcm";
                     sprintf(restrict_file,"%s/site.%s/restrict.dat.%s",site_path,site_id,site_id);
                     printf("\nFrequency Server] Using restrict file path: %s\n\n", restrict_file);
                 } 
                 // Default: Get lab testing restrict file
                 else {
-                    printf("\n[Frequency Server] ERROR: Parameter \'site_id\' is missing or set to a \"lab\" setting!\n");
-                    printf("[Frequency Server] Using restrict.dat.inst in c_include/\n\n");
                     restrict_file = "/home/radar/repos/SuperDARN_MSI_ROS/linux/home/radar/ros.3.6/tables/superdarn/site/site.mcm/restrict.dat.inst";               // File path for lab testing
+                    
+                    printf("\n[Frequency Server] WARNING: Parameter \'site_id\' is missing or set to a \"lab\" setting!\n");
+                    printf("[Frequency Server] Using %s\n\n", restrict_file);
                 }
                 read_restrict(restrict_file, restricted_freq, &restricted_num);
             }
