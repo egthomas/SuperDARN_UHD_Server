@@ -26,7 +26,7 @@
 #define SAMPLE_TIME     3                   // Time per Sample (in seconds)
 #define STORAGE_TIME    60                  // Total time per Sample Storage Batch (in seconds)
 #define META_ELEM       3                   // 4 = 5 - 1 (fcenter has unique obj)
-#define RESTRICT_NUM    15 //16             // Number of restricted freq bands in the restrict.dat.inst
+#define RESTRICT_NUM    20                  // Number of restricted freq bands in the restrict.dat.inst
 #ifndef CLR_BANDS_MAX
 #define CLR_BANDS_MAX   6
 #endif
@@ -712,16 +712,15 @@ int main() {
                 // Get site specific restrict file
                 if (strcmp(new_site_id,"lab") != 0) {
                     printf("[Frequency Server] Using restrict.dat.inst in site_id\n\n");
-                    // Typical File path is ...
-                    // "/home/radar/repos/SuperDARN_MSI_ROS/linux/home/radar/ros.3.6/tables/superdarn/site/site.mcm/restrict.dat.mcm";
                     sprintf(restrict_file,"%s/site.%s/restrict.dat.%s",site_path,site_id,site_id);
                     printf("\nFrequency Server] Using restrict file path: %s\n\n", restrict_file);
                 } 
                 // Default: Get lab testing restrict file
                 else {
-                    printf("\n[Frequency Server] ERROR: Parameter \'site_id\' is missing or set to a \"lab\" setting!\n");
-                    printf("[Frequency Server] Using restrict.dat.inst in c_include/\n\n");
                     restrict_file = "/home/radar/repos/SuperDARN_MSI_ROS/linux/home/radar/ros.3.6/tables/superdarn/site/site.mcm/restrict.dat.inst";               // File path for lab testing
+                    
+                    printf("\n[Frequency Server] WARNING: Parameter \'site_id\' is missing or set to a \"lab\" setting!\n");
+                    printf("[Frequency Server] Using %s\n\n", restrict_file);
                 }
                 read_restrict(restrict_file, restricted_freq, &restricted_num);
             }
@@ -774,26 +773,26 @@ int main() {
             sem_post(sl_samples.sem);
 
             // Store Sample Data
-            if (samples_storage_i < (STORAGE_TIME / SAMPLE_TIME)) {
-                samples_storage[samples_storage_i] = temp_samples;
-                samples_storage_i++;
-            }
-            else {
-                // Process Samples Storage per time Packets ...
-                for (int i = 0; i < (STORAGE_TIME / SAMPLE_TIME); i++) {
-                    // Beamform and FFT in all directions
+            // if (samples_storage_i < (STORAGE_TIME / SAMPLE_TIME)) {
+            //     samples_storage[samples_storage_i] = temp_samples;
+            //     samples_storage_i++;
+            // }
+            // else {
+            //     // Process Samples Storage per time Packets ...
+            //     for (int i = 0; i < (STORAGE_TIME / SAMPLE_TIME); i++) {
+            //         // Beamform and FFT in all directions
 
-                    // Store in temp bin
-                }
+            //         // Store in temp bin
+            //     }
 
-                // Spectral Avg (all packets into 1 and X # of samples by Avg Aatio) and Find Clear Freqs
+            //     // Spectral Avg (all packets into 1 and X # of samples by Avg Aatio) and Find Clear Freqs
 
 
-                // 
+            //     // 
                 
 
-                samples_storage_i = 0;
-            }
+            //     samples_storage_i = 0;
+            // }
 
             // Process Clear Freq
             printf("[Frequency Server] Starting Clear Freq Search...\n");

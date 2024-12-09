@@ -453,7 +453,7 @@ class ClearFrequencyService():
     # Shared Memory Object and Semaphores Constants
     SAMPLES_NUM  = 20000
     ANTENNA_NUM = 16
-    RESTRICT_NUM = 15
+    RESTRICT_NUM = 20
     META_ELEM    = 3                                    # 3 = 4 - 1 (fcenter has unique obj)
     CLR_BAND_MAX = 6
     
@@ -1039,13 +1039,6 @@ class ClearFrequencyService():
             # Clean up
             active_clients = self.decrement_active_clients()
             print(f"[clearFrequencyService] Active clients count after decrement: {active_clients}")
-
-            # for obj in self.shm_objects: 
-            #     os.close(obj['shm_fd'])
-            # os.close(self.active_clients_fd)
-            # for sem in self.semaphores:
-            #     sem['sem'].close()
-            
 
             if active_clients == 0:
                 self.cleanup_shm()
