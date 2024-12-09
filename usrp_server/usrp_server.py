@@ -50,7 +50,7 @@ RMSG_FAILURE = -1
 RADAR_STATE_TIME = .0001
 CHANNEL_STATE_TIMEOUT = 12000
 # TODO: move this out to a config file
-RESTRICT_FILE = '/home/radar/repos/SuperDARN_MSI_ROS/linux/home/radar/ros.3.6/tables/superdarn/site/site.mcm/restrict.dat.mcm'
+RESTRICT_FILE = '/home/radar/repos/SuperDARN_MSI_ROS/linux/home/radar/ros.3.6/tables/superdarn/site/site.mcm/restrict.dat.inst'
 nSwings = 2 
 
 debug = False 
@@ -453,7 +453,7 @@ class ClearFrequencyService():
     # Shared Memory Object and Semaphores Constants
     SAMPLES_NUM  = 20000
     ANTENNA_NUM = 16
-    RESTRICT_NUM = 15
+    RESTRICT_NUM = 20
     META_ELEM    = 3                                    # 3 = 4 - 1 (fcenter has unique obj)
     CLR_BAND_MAX = 6
     
