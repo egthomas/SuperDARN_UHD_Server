@@ -477,7 +477,7 @@ class ClearFrequencyService():
     SITE_ID_SHM_SIZE        = (3 * CHAR_SIZE)
 
     
-    RETRY_ATTEMPTS = 5
+    RETRY_ATTEMPTS = 3
     RETRY_DELAY = 2  # seconds
     
     # Shared Memory Object and Semaphores Names
@@ -522,6 +522,8 @@ class ClearFrequencyService():
         self.sid = sid
         
         try:
+            # self.cleanup_shm(True)
+        
             # Shared Memory Object and Semaphores
             self.sf_client  = self.create_semaphore(self.SEM_F_CLIENT)
             self.sf_server  = self.create_semaphore(self.SEM_F_SERVER)
@@ -1041,7 +1043,7 @@ class ClearFrequencyService():
             print(f"[clearFrequencyService] Active clients count after decrement: {active_clients}")
 
             if active_clients == 0:
-                self.cleanup_shm()
+                self.cleanup_shm(self.CLEAN_ON_INACTIVE)
     
     def cleanup_shm(self, only_active_clients = False):
         if only_active_clients is True:
@@ -1388,10 +1390,7 @@ class scanManager():
         print(f"smsep:      {int(self.channel.raw_export_data['smsep'])}")
         print(f"fcenter:    {int(metaData['usrp_fcenter'])}")
         print(f"beamNo:     {int(beamNo)}")
-        print(f"num_sample: { len(rawData) }")
-        print(f"num_sample: { len(rawData) }")
-
-
+        print(f"antenna sample sets: { len(rawData) }")
         self.clearFreqService.sendSamples(rawData, clear_freq_range, int(metaData['usrp_fcenter']), int(beamNo), int(self.channel.raw_export_data['smsep']), meta_data=metaData)
         
         self.logger.debug('end calc_clear_freq_on_raw_samples')

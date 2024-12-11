@@ -31,7 +31,7 @@
 #define CLR_BANDS_MAX   6
 #endif
 #define CLR_STORAGE_NUM 100
-#define CLR_STORE_FILEPATH "../log/clr_band_storage/"
+#define CLR_STORE_FILEPATH "log/clr_band_storage/"
 #define SITE_ID_ELEM    3                   // 3 = 3-letter identifier 
 
 #define SAMPLES_SHM_SIZE        (ANTENNA_NUM * SAMPLES_NUM * 2 * sizeof(int)) 
