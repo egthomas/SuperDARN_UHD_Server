@@ -27,12 +27,18 @@
 // Config and Debug Flags
 #define VERBOSE 0
 #define SPECTRAL_AVGING 1
+#define BIN_OR_CSV_LOG  0   // 0 for Bin, otherwise CSV
+
 #define TEST_SAMPLES 0
 #define TEST_CLR_RANGE 1
 
 // Config Filepaths
-#define SPECTRAL_LOG_FILE "save_spectra"
-
+#define SPECTRAL_LOG_FILE   "save_spectra"
+#define LOG_PATH            "log/"
+#define SPECTRUM_FILE       "log/fft_spectrum/fft_spectrum.%s.%s"
+#define CLR_FREQ_FILE       "log/clr_freq/clr_freq.%s.%s"
+#define SAMPLE_RE_FILE      "log/sample_re.csv"
+#define SAMPLE_IM_FILE      "log/sample_im.csv"
 
 // TODO: Pass in clr_freq_range via restrict actual file
 // #define RESTRICT_FILE = '/home/radar/repos/SuperDARN_MSI_ROS/linux/home/radar/ros.3.6/tables/superdarn/site/site.sps/restrict.dat.inst'
@@ -371,10 +377,6 @@ void find_clear_freqs(double *spectrum, sample_meta_data meta_data, double delta
 
 // HACK apply efficient matrix multi via cblas_dgemm
 void calc_clear_freq_on_raw_samples(fftw_complex **raw_samples, sample_meta_data *meta_data, freq_band *restricted_bands, int restricted_num, int *clear_freq_range, double beam_angle, double smsep, freq_band *clr_bands) {
-    char *spectrum_file = "../Freq_Server/utils/csv_dump/fft_spectrum/fft_spectrum.%s.csv";
-    char *clr_freq_file = "../Freq_Server/utils/csv_dump/clr_freq.csv";
-    char *sample_re_file = "../Freq_Server/utils/csv_dump/samples/sample_re.csv";
-    char *sample_im_file = "../Freq_Server/utils/csv_dump/samples/sample_im.csv";
     int **sample_re = NULL;
     int **sample_im = NULL;
     
@@ -479,8 +481,8 @@ void calc_clear_freq_on_raw_samples(fftw_complex **raw_samples, sample_meta_data
 
     int clear_sample_start = (int) round((clear_freq_range[0] - f_start) / delta_f);
     int clear_sample_end = (int) round((clear_freq_range[1] - f_start) / delta_f);
-    // printf("clear_range: | %f -- %f |\n", clear_freq_range[0], clear_freq_range[1]);
-    // printf("    samples: | %d -- %d |\n", clear_sample_start, clear_sample_end);
+    printf("clear_range: | %d -- %d |\n", clear_freq_range[0], clear_freq_range[1]);
+    printf("    samples: | %d -- %d |\n", clear_sample_start, clear_sample_end);
     if (VERBOSE) for (int i = clear_sample_start; i < clear_sample_end; i++) {
         if (i < 2 + clear_sample_start || i > clear_sample_end - 3) printf("spectrum_pow[%d]: %f\n", i, avg_spectrum[i]);   
     }
@@ -505,12 +507,19 @@ void calc_clear_freq_on_raw_samples(fftw_complex **raw_samples, sample_meta_data
     
 
     // Save data to csv
-    if (access(SPECTRAL_LOG_FILE, F_OK) == 0) {
-        // write_sample_mag_csv(sample_im_file, sample_im, freq_vector, meta_data);             // Used to check complex Samples after Beamforming; ...
-        // write_sample_mag_csv(sample_re_file, sample_re, freq_vector, meta_data);             // Plot w/ sample_plot.py
-        write_spectrum_mag_csv(spectrum_file, avg_spectrum, freq_vector_avg, num_avg_samples);  // Spectrum after Spectrum FFT averaging; plot w/ spectrum_plot.py
-        write_clr_freq_csv(clr_freq_file, clr_bands);                                           // Used to plot Clear Freq Bands w/ spectrum_plot.clr_freq.py
-    } else printf("\'save_spectra\' not found. Not logging spectra nor clr_frequency.\n");
+    if (access(SPECTRAL_LOG_FILE, F_OK) == 0) {        
+        // Write logs if its folder accessable
+        if (BIN_OR_CSV_LOG == 0) {
+            write_spectrum_mag_bin(SPECTRUM_FILE, avg_spectrum, freq_vector_avg, num_avg_samples);
+            write_clr_freq_bin(CLR_FREQ_FILE, clr_bands);                                           // Used to plot Clear Freq Bands w/ spectrum_plot.clr_freq.py
+        } else {
+            // write_sample_mag_csv(sample_im_file, sample_im, freq_vector, meta_data);                                                     // Used to check complex Samples after Beamforming; ...
+            // write_sample_mag_csv(sample_re_file, sample_re, freq_vector, meta_data);                                                     // Plot w/ sample_plot.py
+            write_spectrum_mag_csv(SPECTRUM_FILE, avg_spectrum, freq_vector_avg, num_avg_samples);  // Spectrum after Spectrum FFT averaging; plot w/ spectrum_plot.py
+            write_clr_freq_csv(CLR_FREQ_FILE, clr_bands);
+        }
+        printf("[CFS] \'save_spectra\' found; Logged individual FFT Spectrum and Clear Frequency batches.");
+    } else printf("[CFS] \'save_spectra\' not found. Not logging spectra nor clr_frequency.\n");
 
     printf("Finished Clear Freq Search!\n");
     
@@ -570,8 +579,7 @@ void phasing_and_beamforming(double beam_angle, int *clear_freq_range, sample_me
     }
     if (VERBOSE)
         printf("beamformed[625]    = %f + %fi\n", creal(beamformed_samples[625]), cimag(beamformed_samples[625]));
-
-} // XXX: Add a initialization???
+}
 
 clear_freq clear_freq_search(
         fftw_complex **raw_samples, 
@@ -583,32 +591,28 @@ clear_freq clear_freq_search(
         sample_meta_data meta_data,
         freq_band *clr_bands
     ) {
-
-    // HACK: Setup file_path environment variable
-    const char *input_file_path = "../Freq_Server/utils/clear_freq_input/clrfreq_dump.1.txt";
     const char *config_path = "../SuperDARN_UHD_Server/array_config.ini";              //"../Freq_Server/utils/clear_freq_input/array_config.ini";
-    // const char *output_file_path = "../utils/txt_output/result.txt";
 
     // Initial Data Variables
-    // sample_meta_data meta_data = {0};
     int n_beams;
-    // beam_num;
     double beam_sep;
     freq_data freq_data;
 
-    // Debug: Define other parameters
+    // Scale parameters to Hz and ms
     // double clear_freq_range[] = { 12 * pow(10,6), 12.5 * pow(10,6) };
     // double beam_angle = 0.08482300164692443;        // in radians
     // double smsep = .0003; // 1 / (2 * 250 * pow(10, 3));      // ~4 ms
     smsep = smsep / 1000000;
-
-    // Load in data for Clear Freq Calculation
-    // read_input_data(input_file_path, &meta_data, &freq_data.clear_freq_range, &raw_samples);
+    if (clear_freq_range[0] < 100000 || clear_freq_range[1] < 100000) {
+        clear_freq_range[0] = clear_freq_range[0] * 1000; 
+        clear_freq_range[1] = clear_freq_range[1] * 1000;
+    }
 
     // Beam Angle Calculation
     read_array_config(config_path, &n_beams, &beam_sep);
     double beam_angle = calc_beam_angle(n_beams, beam_num, beam_sep);  
 
+    // Debug: Display parameters
     printf("\n[Frequency Server] =--- Clear Freq Variables ---=\n");
     printf("num_samples: %d\nnum_antennas: %d\nx_spacing: %lf\nusrp_rf_rate: %d\nusrp_fcenter: %d\n",
         meta_data.number_of_samples,
@@ -619,13 +623,6 @@ clear_freq clear_freq_search(
     );       
     printf("n_beams: %d\nbeam_sep: %f\nbeam_num: %d\nbeam_angle: %f\n", n_beams, beam_sep, beam_num, beam_angle);
 
-    // Check last sample
-    // fftw_complex sample = raw_samples[meta_data.num_antennas - 1][meta_data.number_of_samples - 1];
-    // printf("raw_samples[%d][%d]: %f + %fi\n", meta_data.num_antennas - 1, meta_data.number_of_samples - 1, creal(sample), cimag(sample));
-    // Should be raw_samples[13][2499]: -134.000000 + 168.000000i
-
-
-    
 
     // Stopwatch Start
     double t1,t2;
