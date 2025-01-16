@@ -622,12 +622,12 @@ class scanManager():
 
     def wait_for_next_trigger(self):
         if self.syncBeams:
-           time_to_wait = self.beam_times[self.current_period] - self.get_time_in_scan() - self.integration_time_manager.get_usrp_delay_time()
+           time_to_wait = self.beam_times[self.current_period] - self.get_time_in_scan() - self.RHM.integration_time_manager.get_usrp_delay_time()
            if time_to_wait > 0:
               self.logger.debug("Waiting for {} s".format(time_to_wait))
               time.sleep(time_to_wait)
            else:
-              self.logger.debug("No waiting. ({} + {}) s too late.".format(time_to_wait + self.integration_time_manager.get_usrp_delay_time(), self.integration_time_manager.get_usrp_delay_time()))
+              self.logger.debug("No waiting. ({} + {}) s too late.".format(time_to_wait + self.RHM.integration_time_manager.get_usrp_delay_time(), self.RHM.integration_time_manager.get_usrp_delay_time()))
             
            
     def init_new_scan(self, freq_range_list, scan_beam_list, fixFreq, scan_times_list, scan_duration, integration_duration, start_period):
@@ -640,7 +640,7 @@ class scanManager():
         self.camping = len(scan_beam_list) == 1
 
         # sync paramater
-        self.syncBeams  = scan_times_list != None
+        self.syncBeams  = scan_times_list.any() != None
         self.beam_times = scan_times_list
         self.scan_duration   = scan_duration
         self.integration_duration = integration_duration 
