@@ -640,7 +640,10 @@ class scanManager():
         self.camping = len(scan_beam_list) == 1
 
         # sync paramater
-        self.syncBeams  = scan_times_list.any() != None
+        if scan_times_list is None:
+            self.syncBeams = None
+        else:
+            self.syncBeams = True
         self.beam_times = scan_times_list
         self.scan_duration   = scan_duration
         self.integration_duration = integration_duration 
