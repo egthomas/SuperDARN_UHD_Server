@@ -65,7 +65,7 @@ CS_LAST_SWING    = 'CS_LAST_SWING'
 
 
 class integrationTimeManager():
-   """ Estimates the time the integration period has to be reduced to be able to setup urps copy samples etc"""
+   """ Estimates the time the integration period has to be reduced to be able to setup usrp copy samples etc"""
    def __init__(self, RHM):
       self.RHM = RHM
       self.last_start = None # of trigger next function
@@ -186,7 +186,7 @@ class usrpSockManager():
                self.antennaList_active[idx_usrp].append(usrpConfig['array_idx'])
                
             elif usrpConfig['usrp_hostname'] in self.hostnameList_inactive:
-               self.logger.debug("Already failed to connected to USRP {}".format(usrpConfig['usrp_hostname']))
+               self.logger.debug("Already failed to connect to USRP {}".format(usrpConfig['usrp_hostname']))
                idx_usrp = self.hostnameList_inactive.index(usrpConfig['usrp_hostname'])
                self.antennaList_inactive[idx_usrp].append(usrpConfig['array_idx'])
                
@@ -262,7 +262,7 @@ class usrpSockManager():
                offset += 1 
 
       if len(self.socks) == 0:
-         self.logger.error("No working USRPs left. Shutting down usrs_server...")
+         self.logger.error("No working USRPs left. Shutting down usrp_server...")
          self.RHM.exit()
 
 
@@ -403,7 +403,7 @@ class usrpMixingFreqManager():
 
 
           if (allCh_upper - allCh_lower) > self.usrp_bandwidth:
-             channel.logger.error("new channel can not be added. USPR bandwidth too small")
+             channel.logger.error("new channel can not be added. USRP bandwidth too small")
              result =  False
           else:
              newMixingFreq = (allCh_upper - allCh_lower)/2 + allCh_lower
@@ -480,7 +480,7 @@ class clearFrequencyRawDataManager():
 
 
     def update_auto_clear_freq_data(self, antenna_list, raw_data, meta_data_dict):
-        """ Take the auto clear freq data collected at the end of tranmitting and update the clear freq class"""
+        """ Take the auto clear freq data collected at the end of transmitting and update the clear freq class"""
         self.rawData = raw_data
         self.recordTime = meta_data_dict['record_time']
         self.antennaList = antenna_list
@@ -508,7 +508,7 @@ class clearFrequencyRawDataManager():
             rec_new_samples = data_age > MAX_AGE_OF_AUTO_CLEAR_FREQ
 
         if rec_new_samples:
-            self.logger.debug("clearFreqRawData: age of data is {:2.2f} s. Recoring new data ".format(data_age))
+            self.logger.debug("clearFreqRawData: age of data is {:2.2f} s. Recording new data ".format(data_age))
             self.logger.debug('start record_clrfreq_raw_samples')
             self.rawData, self.antennaList = record_clrfreq_raw_samples(self.usrpManager.get_all_main_antenna_socks(), self.number_of_samples, self.center_freq, self.sampling_rate)
             self.logger.debug('end record_clrfreq_raw_samples')
@@ -1282,7 +1282,7 @@ class RadarHardwareManager:
         self.logger.debug("nSamples_per_sequence: {}, pulse_sequence_period: {}".format(nSamples_per_sequence, pulse_sequence_period))
 
         self.logger.debug("self.starttime_period: {}".format(self.starttime_period))
-        self.logger.debug("self.commonChannelParameter['integration_period_duration: {}".format(self.commonChannelParameter['integration_period_duration']))
+        self.logger.debug("self.commonChannelParameter['integration_period_duration']: {}".format(self.commonChannelParameter['integration_period_duration']))
 
         # to find out how much time is available in an integration period for pulse sequences, subtract out startup delay
        # transmitting_time_left = self.starttime_period + self.commonChannelParameter['integration_period_duration'] - time.time() - self.integration_time_manager.get_usrp_delay_time() - self.integration_time_manager.estimate_calc_time()
@@ -1479,7 +1479,7 @@ class RadarHardwareManager:
                   pdb.set_trace()
               self.logger.debug('end USRP_TRIGGER')
         else:
-           self.logger.debug('No tranmitting channles available. Skipping USRP_TRIGGER')
+           self.logger.debug('No transmitting channels available. Skipping USRP_TRIGGER')
 
         allProcessingChannelStates = [ch.processing_state for ch in self.channels]
         if self.processing_swing_invalid: # TODO check if this works (in control program or data files)
@@ -1542,7 +1542,7 @@ class RadarHardwareManager:
                                    iAntenna = self.antenna_idx_list_back.index(antIdx)
                                    back_samples[iChannel][iAntenna] = samples[:]
                                else:
-                                   self.logger.error("Cuda tranmitted antenna ({}) that is not in main array list ({}) and back array list ({}). (Maybe differnt antenna definietions in usrp_config.ini on both computers?)".format(antIdx, self.antenna_idx_list_main, self.antenna_idx_list_back))
+                                   self.logger.error("Cuda tranmitted antenna ({}) that is not in main array list ({}) and back array list ({}). (Maybe different antenna definitions in usrp_config.ini on both computers?)".format(antIdx, self.antenna_idx_list_main, self.antenna_idx_list_back))
                                    sys.exit(1)
                        else:
                           channel.logger.debug("Receiving NOTHING for channel {} because processing_state is {}".format( channel.cnum, channel.processing_state))
@@ -1619,7 +1619,7 @@ class RadarHardwareManager:
                      channel.write_if_data()
                      
            else:
-              self.logger.debug('No processing channles available. Skipping CUDA_GET_DATA and rx beamforming')
+              self.logger.debug('No processing channels available. Skipping CUDA_GET_DATA and rx beamforming')
 
 
         # PERIOD FINISHED        
@@ -2862,7 +2862,7 @@ class RadarChannelHandler:
         self.cnum = recv_dtype(self.conn, np.int32)
 
         if self.cnum in [ch.cnum for ch in self.parent_RadarHardwareManager.channels if ch is not None and ch is not self]:
-           self.logger.error("New channel (cnum {}) can not be added beause channel with this cnum already active.".format(self.cnum))
+           self.logger.error("New channel (cnum {}) can not be added because channel with this cnum already active.".format(self.cnum))
            return RMSG_FAILURE
         
         
