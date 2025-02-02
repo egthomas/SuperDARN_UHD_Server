@@ -582,7 +582,7 @@ class scanManager():
 
         self.current_clrFreq_result = None
         self.next_clrFreq_result    = None 
-        self.isPrePeriod = True # is vert first trigger_next_period() call that just triggers first period but does not collect cuda data
+        self.isPrePeriod = True # is very first trigger_next_period() call that just triggers first period but does not collect cuda data
         self.isPostLast = False # to handle last trigger_next_swing() call
         self.logger = logging.getLogger('scanManager')
 
@@ -645,16 +645,16 @@ class scanManager():
         else:
             self.syncBeams = True
         self.beam_times = scan_times_list
-        self.scan_duration   = scan_duration
+        self.scan_duration = scan_duration
         self.integration_duration = integration_duration 
     
         self.fixFreq = fixFreq
 
-        # rest all other parameter
+        # reset all other parameter
         self.current_period         = start_period
         self.current_clrFreq_result = None
         self.next_clrFreq_result    = None 
-        self.isPrePeriod            = True # is vert first trigger_next_period() call that just triggers first period but does not collect cuda data
+        self.isPrePeriod            = True # is very first trigger_next_period() call that just triggers first period but does not collect cuda data
         self.isPostLast             = False # to handle last trigger_next_swing() call
         self.logger.debug("in init_new_scan. Setting isInitSetParameter true")
         self.isInitSetParameter     = True
@@ -1056,7 +1056,7 @@ class RadarHardwareManager:
 
         att = float(self.ini_rxfe_settings['attenuation'])
         if att < 0:
-           self.logger.warning('attenuation for rxfe in array.ini is defnined positive, but given value is negative ({} dB). correcting that to {} dB...'.format(att, att*(-1)))
+           self.logger.warning('attenuation for rxfe in array.ini is defined positive, but given value is negative ({} dB). correcting that to {} dB...'.format(att, att*(-1)))
            att *= -1
 
         if att > 31.5:
@@ -1236,7 +1236,7 @@ class RadarHardwareManager:
         self.logger.debug("Settinge exit flag... ")
         self.exit_usrp_server = True
 
-        # conntect to ros port overcome blocking          
+        # connect to ros port overcome blocking
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect(('localhost', RMSG_PORT))
         sock.close()
