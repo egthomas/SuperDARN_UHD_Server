@@ -2548,7 +2548,7 @@ class RadarChannelHandler:
     #@timeit
     def SetParametersHandler(self, rmsg):
         # TODO: check if new freq is possible with usrp_centerFreq
-        # TODO divide compatibiliti check in sequence and ctrlprm check?
+        # TODO divide compatibility check in sequence and ctrlprm check?
         # TODO add compatibility check in parameter prediction function
         self.received_first_SETPAR = True
         RHM = self.parent_RadarHardwareManager
@@ -2612,7 +2612,7 @@ class RadarChannelHandler:
            self.ctrlprm_struct.receive(self.conn)
            for key in ctrlprm_old.keys():
               if np.any(ctrlprm_old[key] != self.ctrlprm_struct.payload[key]):
-                  self.logger.debug("ch {} rreceived new ctrl_prm {} ({}) old ctrl_prm ({})".format(self.cnum, key, self.ctrlprm_struct.payload[key], ctrlprm_old[key] ))
+                  self.logger.debug("ch {} received new ctrl_prm {} ({}) old ctrl_prm ({})".format(self.cnum, key, self.ctrlprm_struct.payload[key], ctrlprm_old[key] ))
                   if key == "tfreq" and self.ctrlprm_struct.payload[key] == 12000: # control program always sends 2 SET_PAR. 1st one with tfreq 12MHz
                       continue
                   self.logger.error("ch {}: received ctrlprm_struct for {} ({}) is not equal with prediction ({})".format(self.cnum, key,self.ctrlprm_struct.payload[key], ctrlprm_old[key] ))
@@ -2741,7 +2741,7 @@ class RadarChannelHandler:
     
     #@timeit
     def GetDataHandler(self, rmsg):
-        self.logger.debug('start channelHanlder:GetDataHandler ch: {}'.format(self.cnum))
+        self.logger.debug('start channelHandler:GetDataHandler ch: {}'.format(self.cnum))
         self.update_ctrlprm_class("current")
         self.dataprm_struct.set_data('samples', self.ctrlprm_struct.payload['number_of_samples'])
 
@@ -2755,18 +2755,18 @@ class RadarChannelHandler:
         # TODO investigate possible race conditions
 
         finishedSwing = self.triggered_swing_list.pop() 
-        self.logger.debug('ch {}: channelHanlder:GetDataHandler waiting for channel to idle before GET_DATA (finished swing is {})'.format(self.cnum, finishedSwing))
+        self.logger.debug('ch {}: channelHandler:GetDataHandler waiting for channel to idle before GET_DATA (finished swing is {})'.format(self.cnum, finishedSwing))
         self.logger.debug("start waiting for CS_SAMPLES_READY")
         self._waitForState(finishedSwing, CS_SAMPLES_READY)
         self.logger.debug("end waiting for CS_SAMPLES_READY")
 
-        self.logger.debug('ch {}: channelHanlder:GetDataHandler returning samples'.format(self.cnum))
+        self.logger.debug('ch {}: channelHandler:GetDataHandler returning samples'.format(self.cnum))
 #        transmit_dtype(self.conn, self.parent_RadarHardwareManager.resultData_nSequences_per_period, np.uint32)  
         self.send_results_to_control_program()
 
-        self.logger.debug('ch {}: channelHanlder:GetDataHandler finished returning samples. setting state to {}  (swing {})'.format(self.cnum, self.next_state[finishedSwing], finishedSwing))
+        self.logger.debug('ch {}: channelHandler:GetDataHandler finished returning samples. setting state to {}  (swing {})'.format(self.cnum, self.next_state[finishedSwing], finishedSwing))
         self.state[finishedSwing] = self.next_state[finishedSwing]
-        self.logger.debug('end channelHanlder:GetDataHandler ch: {}'.format(self.cnum))
+        self.logger.debug('end channelHandler:GetDataHandler ch: {}'.format(self.cnum))
 
         return RMSG_SUCCESS
 
