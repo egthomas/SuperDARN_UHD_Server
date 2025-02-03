@@ -410,7 +410,7 @@ def stop_cuda_driver():
                sock.connect(('localhost',CUDADriverPort))
                sock.sendall(np.uint8(CUDA_EXIT).tobytes())
             except:
-                myPrint(" soft extit failed: localhost:{} (pid {})".format(CUDADriverPort, process['pid']))
+                myPrint(" soft exit failed: localhost:{} (pid {})".format(CUDADriverPort, process['pid']))
                 
         
        time.sleep(1)
@@ -425,7 +425,7 @@ def stop_usrp_server():
     if len(serverProcesses):
       try:
           for process in serverProcesses:
-               myPrint("  sending SEVER_EXIT to localhost:{} (pid {})".format(USRP_SERVER_PORT, process['pid']))
+               myPrint("  sending SERVER_EXIT to localhost:{} (pid {})".format(USRP_SERVER_PORT, process['pid']))
                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                sock.connect(('localhost', USRP_SERVER_PORT))
                time.sleep(0.3)

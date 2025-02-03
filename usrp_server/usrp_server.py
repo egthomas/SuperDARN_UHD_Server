@@ -66,7 +66,7 @@ CS_LAST_SWING    = 'CS_LAST_SWING'
 
 
 class integrationTimeManager():
-   """ Estimates the time the integration period has to be reduced to be able to setup urps copy samples etc"""
+   """ Estimates the time the integration period has to be reduced to be able to setup usrp copy samples etc"""
    def __init__(self, RHM):
       self.RHM = RHM
       self.last_start = None # of trigger next function
@@ -187,7 +187,7 @@ class usrpSockManager():
                self.antennaList_active[idx_usrp].append(usrpConfig['array_idx'])
                
             elif usrpConfig['usrp_hostname'] in self.hostnameList_inactive:
-               self.logger.debug("Already failed to connected to USRP {}".format(usrpConfig['usrp_hostname']))
+               self.logger.debug("Already failed to connect to USRP {}".format(usrpConfig['usrp_hostname']))
                idx_usrp = self.hostnameList_inactive.index(usrpConfig['usrp_hostname'])
                self.antennaList_inactive[idx_usrp].append(usrpConfig['array_idx'])
                
@@ -263,7 +263,7 @@ class usrpSockManager():
                offset += 1 
 
       if len(self.socks) == 0:
-         self.logger.error("No working USRPs left. Shutting down usrs_server...")
+         self.logger.error("No working USRPs left. Shutting down usrp_server...")
          self.RHM.exit()
 
 
@@ -404,7 +404,7 @@ class usrpMixingFreqManager():
 
 
           if (allCh_upper - allCh_lower) > self.usrp_bandwidth:
-             channel.logger.error("new channel can not be added. USPR bandwidth too small")
+             channel.logger.error("new channel can not be added. USRP bandwidth too small")
              result =  False
           else:
              newMixingFreq = (allCh_upper - allCh_lower)/2 + allCh_lower
@@ -1125,7 +1125,7 @@ class clearFrequencyRawDataManager():
 
 
     def update_auto_clear_freq_data(self, antenna_list, raw_data, meta_data_dict):
-        """ Take the auto clear freq data collected at the end of tranmitting and update the clear freq class"""
+        """ Take the auto clear freq data collected at the end of transmitting and update the clear freq class"""
         self.rawData = raw_data
         self.recordTime = meta_data_dict['record_time']
         self.antennaList = antenna_list
@@ -1152,7 +1152,7 @@ class clearFrequencyRawDataManager():
             rec_new_samples = data_age > MAX_AGE_OF_AUTO_CLEAR_FREQ
 
         if rec_new_samples:
-            self.logger.debug("clearFreqRawData: age of data is {:2.2f} s. Recoring new data ".format(data_age))
+            self.logger.debug("clearFreqRawData: age of data is {:2.2f} s. Recording new data ".format(data_age))
             self.logger.debug('start record_clrfreq_raw_samples')
             self.rawData, self.antennaList = record_clrfreq_raw_samples(self.usrpManager.get_all_main_antenna_socks(), self.number_of_samples, self.center_freq, self.sampling_rate)
             self.logger.debug('end record_clrfreq_raw_samples')
@@ -1227,7 +1227,7 @@ class scanManager():
 
         self.current_clrFreq_result = None
         self.next_clrFreq_result    = None 
-        self.isPrePeriod = True # is vert first trigger_next_period() call that just triggers first period but does not collect cuda data
+        self.isPrePeriod = True # is very first trigger_next_period() call that just triggers first period but does not collect cuda data
         self.isPostLast = False # to handle last trigger_next_swing() call
         self.logger = logging.getLogger('scanManager')
 
@@ -1267,12 +1267,12 @@ class scanManager():
 
     def wait_for_next_trigger(self):
         if self.syncBeams:
-           time_to_wait = self.beam_times[self.current_period] - self.get_time_in_scan() - self.integration_time_manager.get_usrp_delay_time()
+           time_to_wait = self.beam_times[self.current_period] - self.get_time_in_scan() - self.RHM.integration_time_manager.get_usrp_delay_time()
            if time_to_wait > 0:
               self.logger.debug("Waiting for {} s".format(time_to_wait))
               time.sleep(time_to_wait)
            else:
-              self.logger.debug("No waiting. ({} + {}) s too late.".format(time_to_wait + self.integration_time_manager.get_usrp_delay_time(), self.integration_time_manager.get_usrp_delay_time()))
+              self.logger.debug("No waiting. ({} + {}) s too late.".format(time_to_wait + self.RHM.integration_time_manager.get_usrp_delay_time(), self.RHM.integration_time_manager.get_usrp_delay_time()))
             
            
     def init_new_scan(self, freq_range_list, scan_beam_list, fixFreq, scan_times_list, scan_duration, integration_duration, start_period):
@@ -1285,18 +1285,21 @@ class scanManager():
         self.camping = len(scan_beam_list) == 1
 
         # sync paramater
-        self.syncBeams  = scan_times_list != None
+        if scan_times_list is None:
+            self.syncBeams = None
+        else:
+            self.syncBeams = True
         self.beam_times = scan_times_list
-        self.scan_duration   = scan_duration
+        self.scan_duration = scan_duration
         self.integration_duration = integration_duration 
     
         self.fixFreq = fixFreq
 
-        # rest all other parameter
+        # reset all other parameter
         self.current_period         = start_period
         self.current_clrFreq_result = None
         self.next_clrFreq_result    = None 
-        self.isPrePeriod            = True # is vert first trigger_next_period() call that just triggers first period but does not collect cuda data
+        self.isPrePeriod            = True # is very first trigger_next_period() call that just triggers first period but does not collect cuda data
         self.isPostLast             = False # to handle last trigger_next_swing() call
         self.logger.debug("in init_new_scan. Setting isInitSetParameter true")
         self.isInitSetParameter     = True
@@ -1709,7 +1712,7 @@ class RadarHardwareManager:
 
         att = float(self.ini_rxfe_settings['attenuation'])
         if att < 0:
-           self.logger.warning('attenuation for rxfe in array.ini is defnined positive, but given value is negative ({} dB). correcting that to {} dB...'.format(att, att*(-1)))
+           self.logger.warning('attenuation for rxfe in array.ini is defined positive, but given value is negative ({} dB). correcting that to {} dB...'.format(att, att*(-1)))
            att *= -1
 
         if att > 31.5:
@@ -1889,7 +1892,7 @@ class RadarHardwareManager:
         self.logger.debug("Settinge exit flag... ")
         self.exit_usrp_server = True
 
-        # conntect to ros port overcome blocking          
+        # connect to ros port overcome blocking
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect(('localhost', RMSG_PORT))
         sock.close()
@@ -1935,7 +1938,7 @@ class RadarHardwareManager:
         self.logger.debug("nSamples_per_sequence: {}, pulse_sequence_period: {}".format(nSamples_per_sequence, pulse_sequence_period))
 
         self.logger.debug("self.starttime_period: {}".format(self.starttime_period))
-        self.logger.debug("self.commonChannelParameter['integration_period_duration: {}".format(self.commonChannelParameter['integration_period_duration']))
+        self.logger.debug("self.commonChannelParameter['integration_period_duration']: {}".format(self.commonChannelParameter['integration_period_duration']))
 
         # to find out how much time is available in an integration period for pulse sequences, subtract out startup delay
        # transmitting_time_left = self.starttime_period + self.commonChannelParameter['integration_period_duration'] - time.time() - self.integration_time_manager.get_usrp_delay_time() - self.integration_time_manager.estimate_calc_time()
@@ -2132,7 +2135,7 @@ class RadarHardwareManager:
                   pdb.set_trace()
               self.logger.debug('end USRP_TRIGGER')
         else:
-           self.logger.debug('No tranmitting channles available. Skipping USRP_TRIGGER')
+           self.logger.debug('No transmitting channels available. Skipping USRP_TRIGGER')
 
         allProcessingChannelStates = [ch.processing_state for ch in self.channels]
         if self.processing_swing_invalid: # TODO check if this works (in control program or data files)
@@ -2195,7 +2198,7 @@ class RadarHardwareManager:
                                    iAntenna = self.antenna_idx_list_back.index(antIdx)
                                    back_samples[iChannel][iAntenna] = samples[:]
                                else:
-                                   self.logger.error("Cuda tranmitted antenna ({}) that is not in main array list ({}) and back array list ({}). (Maybe differnt antenna definietions in usrp_config.ini on both computers?)".format(antIdx, self.antenna_idx_list_main, self.antenna_idx_list_back))
+                                   self.logger.error("Cuda tranmitted antenna ({}) that is not in main array list ({}) and back array list ({}). (Maybe different antenna definitions in usrp_config.ini on both computers?)".format(antIdx, self.antenna_idx_list_main, self.antenna_idx_list_back))
                                    sys.exit(1)
                        else:
                           channel.logger.debug("Receiving NOTHING for channel {} because processing_state is {}".format( channel.cnum, channel.processing_state))
@@ -2272,7 +2275,7 @@ class RadarHardwareManager:
                      channel.write_if_data()
                      
            else:
-              self.logger.debug('No processing channles available. Skipping CUDA_GET_DATA and rx beamforming')
+              self.logger.debug('No processing channels available. Skipping CUDA_GET_DATA and rx beamforming')
 
 
         # PERIOD FINISHED        
@@ -3201,7 +3204,7 @@ class RadarChannelHandler:
     #@timeit
     def SetParametersHandler(self, rmsg):
         # TODO: check if new freq is possible with usrp_centerFreq
-        # TODO divide compatibiliti check in sequence and ctrlprm check?
+        # TODO divide compatibility check in sequence and ctrlprm check?
         # TODO add compatibility check in parameter prediction function
         self.received_first_SETPAR = True
         RHM = self.parent_RadarHardwareManager
@@ -3265,7 +3268,7 @@ class RadarChannelHandler:
            self.ctrlprm_struct.receive(self.conn)
            for key in ctrlprm_old.keys():
               if np.any(ctrlprm_old[key] != self.ctrlprm_struct.payload[key]):
-                  self.logger.debug("ch {} rreceived new ctrl_prm {} ({}) old ctrl_prm ({})".format(self.cnum, key, self.ctrlprm_struct.payload[key], ctrlprm_old[key] ))
+                  self.logger.debug("ch {} received new ctrl_prm {} ({}) old ctrl_prm ({})".format(self.cnum, key, self.ctrlprm_struct.payload[key], ctrlprm_old[key] ))
                   if key == "tfreq" and self.ctrlprm_struct.payload[key] == 12000: # control program always sends 2 SET_PAR. 1st one with tfreq 12MHz
                       continue
                   self.logger.error("ch {}: received ctrlprm_struct for {} ({}) is not equal with prediction ({})".format(self.cnum, key,self.ctrlprm_struct.payload[key], ctrlprm_old[key] ))
@@ -3394,7 +3397,7 @@ class RadarChannelHandler:
     
     #@timeit
     def GetDataHandler(self, rmsg):
-        self.logger.debug('start channelHanlder:GetDataHandler ch: {}'.format(self.cnum))
+        self.logger.debug('start channelHandler:GetDataHandler ch: {}'.format(self.cnum))
         self.update_ctrlprm_class("current")
         self.dataprm_struct.set_data('samples', self.ctrlprm_struct.payload['number_of_samples'])
 
@@ -3408,18 +3411,18 @@ class RadarChannelHandler:
         # TODO investigate possible race conditions
 
         finishedSwing = self.triggered_swing_list.pop() 
-        self.logger.debug('ch {}: channelHanlder:GetDataHandler waiting for channel to idle before GET_DATA (finished swing is {})'.format(self.cnum, finishedSwing))
+        self.logger.debug('ch {}: channelHandler:GetDataHandler waiting for channel to idle before GET_DATA (finished swing is {})'.format(self.cnum, finishedSwing))
         self.logger.debug("start waiting for CS_SAMPLES_READY")
         self._waitForState(finishedSwing, CS_SAMPLES_READY)
         self.logger.debug("end waiting for CS_SAMPLES_READY")
 
-        self.logger.debug('ch {}: channelHanlder:GetDataHandler returning samples'.format(self.cnum))
+        self.logger.debug('ch {}: channelHandler:GetDataHandler returning samples'.format(self.cnum))
 #        transmit_dtype(self.conn, self.parent_RadarHardwareManager.resultData_nSequences_per_period, np.uint32)  
         self.send_results_to_control_program()
 
-        self.logger.debug('ch {}: channelHanlder:GetDataHandler finished returning samples. setting state to {}  (swing {})'.format(self.cnum, self.next_state[finishedSwing], finishedSwing))
+        self.logger.debug('ch {}: channelHandler:GetDataHandler finished returning samples. setting state to {}  (swing {})'.format(self.cnum, self.next_state[finishedSwing], finishedSwing))
         self.state[finishedSwing] = self.next_state[finishedSwing]
-        self.logger.debug('end channelHanlder:GetDataHandler ch: {}'.format(self.cnum))
+        self.logger.debug('end channelHandler:GetDataHandler ch: {}'.format(self.cnum))
 
         return RMSG_SUCCESS
 
@@ -3515,7 +3518,7 @@ class RadarChannelHandler:
         self.cnum = recv_dtype(self.conn, np.int32)
 
         if self.cnum in [ch.cnum for ch in self.parent_RadarHardwareManager.channels if ch is not None and ch is not self]:
-           self.logger.error("New channel (cnum {}) can not be added beause channel with this cnum already active.".format(self.cnum))
+           self.logger.error("New channel (cnum {}) can not be added because channel with this cnum already active.".format(self.cnum))
            return RMSG_FAILURE
         
         
@@ -3673,7 +3676,7 @@ def main():
     now = datetime.datetime.now()
     now_string = now.strftime("__%Y%m%d_%H%M%S")
     logging_usrp.initLogging('server' + now_string + '.log')
-    logging.info('Strating main() of usrp_server')
+    logging.info('Starting main() of usrp_server')
 
 
     radar = RadarHardwareManager(RMSG_PORT)
