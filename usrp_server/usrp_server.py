@@ -1798,14 +1798,14 @@ class RadarHardwareManager:
 
 
     def no_channel_gain_control(self, nChannelsWillBeAdded=0):
-        self.logger.debug("No channel scaling. Global factor for all channels is: totalScaligFactor  = {} ".format(self.scaling_factor_tx_total ))
+        self.logger.debug("No channel scaling. Global factor for all channels is: totalScalingFactor  = {} ".format(self.scaling_factor_tx_total ))
         for ch in self.channels + self.newChannelList:
             ch.channelScalingFactor = self.scaling_factor_tx_total
 
 
     def gain_control_divide_by_nChannels(self, nChannelsWillBeAdded=0):
         nChannels = len(self.channels) + nChannelsWillBeAdded
-        self.logger.debug("Setting channel scaling factor to: totalScaligFactor / nChannels = {}/ {} ".format(self.scaling_factor_tx_total, nChannels))
+        self.logger.debug("Setting channel scaling factor to: totalScalingFactor / nChannels = {}/ {} ".format(self.scaling_factor_tx_total, nChannels))
         for ch in self.channels + self.newChannelList:
             ch.channelScalingFactor = self.scaling_factor_tx_total
 #            ch.channelScalingFactor = 1 / nChannels * self.scaling_factor_tx_total
@@ -2425,7 +2425,7 @@ class RadarChannelHandler:
 
     def write_bb_data(channel):
         channel.logger.debug('start saving BB samples')
-        time_now = datetime.datetime.utcnow()
+        time_now = datetime.datetime.now(datetime.UTC)
         version = 3 
         hardwareManager = channel.parent_RadarHardwareManager
         
@@ -3017,7 +3017,7 @@ class RadarChannelHandler:
 def main():
     # maybe switch to multiprocessing with manager process
     
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(datetime.UTC)
     now_string = now.strftime("__%Y%m%d_%H%M%S")
     logging_usrp.initLogging('server' + now_string + '.log')
     logging.info('Starting main() of usrp_server')

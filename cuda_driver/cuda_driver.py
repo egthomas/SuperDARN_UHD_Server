@@ -26,7 +26,7 @@ import pycuda.compiler
 import pycuda.autoinit
 
 import pickle # for cuda dump
-from datetime import datetime
+from datetime import datetime, UTC
 import time
 
 sys.path.insert(0, '../python_include')
@@ -140,7 +140,7 @@ class cuda_generate_pulse_handler(cudamsg_handler):
 
 
         if os.path.isfile('./cuda.dump.tx'):
-             name = datetime.now().strftime('%Y-%m-%d_%H%M%S')
+             name = datetime.now(UTC).strftime('%Y-%m-%d_%H%M%S')
              with open('/data/diagnostic_samples/cuda_dump_tx_'+ name + '.pkl', 'wb') as f:
                   pickle.dump(self.gpu.tx_rf_outdata, f, pickle.HIGHEST_PROTOCOL)
              os.remove('cuda.dump.tx') # only save tx samples once
@@ -1119,7 +1119,7 @@ def release_sem(semList):
 
 
 def main():
-    now = datetime.now()
+    now = datetime.now(UTC)
     now_string = now.strftime("__%Y%m%d_%H%M%S")
     logging_usrp.initLogging('cuda' + now_string + '.log')
     logger = logging.getLogger('cuda_driver')

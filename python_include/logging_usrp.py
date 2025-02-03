@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 
 consoleOutputLevel = logging.DEBUG
 logfileOutputLevel = logging.DEBUG
@@ -32,6 +33,8 @@ def initLogging(logFileName):
 
     console.setFormatter(consoleFormatter)
     logging.getLogger('').addHandler(console) # add the handler to the root logger
+
+    logging.Formatter.converter = time.gmtime
 
     # Now, we can log to the root logger, or any other logger. First the root...
     logging.info('Starting logging ...')

@@ -30,7 +30,7 @@ watch_usrp_server = "server" in sys.argv
 # LOG FILE 
 if write_log:
     log_file_path = os.path.join(basePath, "log/watchdog")
-    time_now = datetime.datetime.now()
+    time_now = datetime.datetime.now(datetime.UTC)
     fileName = 'watchdog__{:04d}{:02d}{:02d}_{:02d}{:02d}{:02d}.log'.format(time_now.year, time_now.month, time_now.day, time_now.hour, time_now.minute,time_now.second)
     print(log_file_path)
     if not os.path.isdir(log_file_path):
@@ -42,7 +42,7 @@ if write_log:
 def log(msg):
     print(msg)
     if write_log:
-       time_now = datetime.datetime.now()
+       time_now = datetime.datetime.now(datetime.UTC)
        log_str = '{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}   {}\n'.format(time_now.year, time_now.month, time_now.day, time_now.hour, time_now.minute,time_now.second, msg)
        log_handle.write(log_str)
        log_handle.flush()
