@@ -151,8 +151,8 @@ class RawDataGUI:
         if event.key == 'right':
             self.iSequence = (self.iSequence+1) % self.nSequences
             self.updateGUI()
-
         elif event.key == 'left':
+            self.iSequence = (self.iSequence-1) % self.nSequences
             self.updateGUI()
         elif event.key == 'up':
             self.iPeriod = (self.iPeriod+1) % self.nPeriods
