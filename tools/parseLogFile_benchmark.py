@@ -4,8 +4,8 @@ Function parses usrp_server log file and plots timing of main function calls.
 Therefore logger level has to be set to DEBUG (in python_include/logging_usrp.py).
 Function call:
 
- - no argument:         looks for newest file in ../log/
- - only filename:       looks for that file in ../log/
+ - no argument:         looks for newest file in /data/log/
+ - only filename:       looks for that file in /data/log/
  - filename with path:  takes this file
 
 Created on Thu Nov 17 18:42:45 2016
@@ -113,7 +113,7 @@ class timeSpans():
 
 
 # %% try input arguments ...
-raw_path = "../log/"
+raw_path = "/data/log/"
 
 if len(sys.argv) == 1:
     import glob

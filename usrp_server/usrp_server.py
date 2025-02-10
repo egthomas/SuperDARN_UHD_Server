@@ -115,7 +115,7 @@ class statusUpdater():
    " Class to a file every x minutes to allow checking usrp_status from outside"
 
    def __init__(self, RHM ):
-      self.fileName = '../log/usrp_server_status.txt'
+      self.fileName = '/data/log/usrp_server_status.txt'
       self.RHM = RHM
       self.nSeconds_update_period = 5
       self.last_write = datetime.datetime.now()

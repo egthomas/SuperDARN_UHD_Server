@@ -87,7 +87,7 @@
 
 #define CAPTURE_ERRORS 0
 
-const char * log_dir = "../log/usrp_driver"; 
+const char * log_dir = "/data/log/usrp_driver";
 const char * diag_dir = "/data/diagnostic_samples/usrp_driver"; 
 
 // create log and diag_samples dir

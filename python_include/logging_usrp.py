@@ -9,7 +9,7 @@ logfileOutputLevel = logging.DEBUG
 useColor = True
 
 
-logDir = "../log/"
+logDir = "/data/log/"
 if not os.path.exists(logDir):
    os.makedirs(logDir)
 

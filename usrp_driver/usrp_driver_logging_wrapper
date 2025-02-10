@@ -3,5 +3,9 @@ echo `date -u +%s`>>$4.log
 NOW=$(date -u +"%Y%m%d_%H%M%S")
 LOGFILE="usrp_driver_$2__$NOW.log"
 
-./usrp_driver "$@" > ../log/usrp_driver/$LOGFILE  2>&1
+if [ ! -d /data/log/usrp_driver ]; then
+  mkdir /data/log/usrp_driver
+fi
+
+./usrp_driver "$@" > /data/log/usrp_driver/$LOGFILE  2>&1
 
