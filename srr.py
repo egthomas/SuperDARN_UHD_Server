@@ -100,7 +100,7 @@ def waitFor(nSeconds):
       print('.', end="", flush=True)
       time.sleep(1)
    else:
-      print
+      print()
 ######################
 ## init
 def initialize(inputArg):
