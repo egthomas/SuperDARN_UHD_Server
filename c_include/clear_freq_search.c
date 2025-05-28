@@ -225,22 +225,23 @@ void mask_restricted_freq(double *spectrum, double *freq_vector, int delta_f, in
 void find_clear_freqs(double *spectrum, sample_meta_data meta_data, double delta_f, double f_start, double f_end, int clear_bw, freq_band *clr_bands) {
     
     log_debug("[find_clear_freqs()] Entered find_clear_freqs()...");
-    if (clear_bw == 0) clear_bw = 5e3;
-    clear_bw *= GB_MULT;
-    int clear_sample_bw = (clear_bw) / CLRFREQ_RES; 
+    // if (clear_bw == 0) clear_bw = 5e3;
+    // clear_bw *= GB_MULT;
+    int clear_sample_bw = (clear_bw) / delta_f; 
 
 
     // Define Range of Clear Freq Search 
     int spectrum_sample_start = (int) ((meta_data.usrp_fcenter * 1000 - meta_data.usrp_rf_rate / 2) / delta_f);
     int spectrum_sample_end = (int) ((meta_data.usrp_fcenter * 1000 + meta_data.usrp_rf_rate / 2) / delta_f);
+    int spectrum_sample_bw = spectrum_sample_end - spectrum_sample_end;
     int clr_search_sample_start = (int) (f_start / delta_f) - spectrum_sample_start;
     int clr_search_sample_end = (int) (f_end / delta_f) - spectrum_sample_start;
     if (clr_search_sample_start < 0) clr_search_sample_start = 0;
-    else if (clr_search_sample_start > spectrum_sample_end) clr_search_sample_start = spectrum_sample_end;
+    else if (clr_search_sample_start > spectrum_sample_bw) clr_search_sample_start = spectrum_sample_bw;
     if (clr_search_sample_end < 0) clr_search_sample_end = 0;
-    else if (clr_search_sample_end > spectrum_sample_end) clr_search_sample_end = spectrum_sample_end;
+    else if (clr_search_sample_end > spectrum_sample_bw) clr_search_sample_end = spectrum_sample_bw;
 
-    log_trace("spectrum_sample_start: %d     f_start: %f", spectrum_sample_start, f_start);
+    log_trace("spectrum_sample_start: %d     clr_search_range_start: %f", spectrum_sample_start, f_start);
 
     // Trim Spectrum Data to only Clear Search Range (Used for convolving)
     int clr_search_sample_bw = clr_search_sample_end - clr_search_sample_start;
@@ -511,7 +512,7 @@ void calc_clear_freq_on_raw_samples(fftw_complex **raw_samples, sample_meta_data
 
     // Find clear frequency
     double clear_bw = 4e6 / smsep; // ~ 300 us
-    clear_bw = 0;
+
     clock_t t1, t2;
     t1 = clock();
     find_clear_freqs(avg_spectrum, *meta_data, delta_f_avg, clear_freq_range[0], clear_freq_range[1], clear_bw, clr_bands);
