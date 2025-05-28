@@ -630,7 +630,7 @@ clear_freq clear_freq_search(
     // double clear_freq_range[] = { 12 * pow(10,6), 12.5 * pow(10,6) };
     // double beam_angle = 0.08482300164692443;        // in radians
     // double smsep = .0003; // 1 / (2 * 250 * pow(10, 3));      // ~4 ms
-    smsep = smsep / 1000000;
+    // smsep = smsep / 1000000;
     if (clear_freq_range[0] < 100000 || clear_freq_range[1] < 100000) {
         clear_freq_range[0] = clear_freq_range[0] * 1000; 
         clear_freq_range[1] = clear_freq_range[1] * 1000;
