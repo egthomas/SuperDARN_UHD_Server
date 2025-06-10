@@ -1,6 +1,7 @@
 # all filters for RX downsampling and smooting TX pulses
 import numpy as np
 import scipy.ndimage
+from scipy import signal
 
 # filter for TX pulses
 def gaussian_pulse(samples, trise, rate):
@@ -18,7 +19,8 @@ def gaussian_pulse(samples, trise, rate):
 # filter also includes mixing frequencies
 def kaiser_filter_s0(nTaps, channelFreqVec, samplingRate, normalize = True):
     gain = 3.73 # was 3.5 before
-    beta = 5
+    beta = 5.25
+    #beta = 10
     filterData = np.zeros((len(channelFreqVec), nTaps,2), dtype=np.float32)
     m = nTaps - 1
     b = scipy.special.i0(beta)
@@ -54,6 +56,26 @@ def rect_filter_s0(nTaps, channelFreqVec, samplingRate):
            dbPrint("filter generation: channel {}: skipping because undefined".format(iChannel))
     return filterData
 
+
+def kaiser_filter_r0(nTaps, channelFreqVec, normalize = True, beta=5, gain=3.73):Add commentMore actions
+    # gain = 3.73 # was 3.5 before
+    filterData = np.zeros((len(channelFreqVec), nTaps,2), dtype=np.float32)
+    m = nTaps - 1
+    b = scipy.special.i0(beta)
+
+    for iChannel, channelFreq in enumerate(channelFreqVec):
+        if channelFreq != None:
+          # dbPrint('filter generation Channel {}: Freq : {} kHz'.format(iChannel, channelFreq/1e3))
+            window=signal.windows.kaiser(nTaps,beta=beta)
+            for iTap in range(nTaps):
+               filterData[iChannel,iTap,0] = gain * window[iTap]
+        else:
+           dbPrint("filter generation: channel {}: skipping because undefined".format(iChannel))
+
+    if normalize:
+        filterData /= nTaps * 2
+
+    return filterData
 
 
 def raisedCosine_filter(nTaps, nChannels, normalize = True):

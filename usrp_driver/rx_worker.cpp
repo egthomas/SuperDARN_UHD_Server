@@ -85,6 +85,7 @@ void usrp_rx_worker(
 
     // DEBUG to check timing
     double time_to_start;
+    useconds_t usecs=200;
     rx_usrp_pre_stream_time = usrp->get_time_now();
     time_to_start = start_time.get_real_secs() - rx_usrp_pre_stream_time.get_real_secs();
     fprintf(stderr,"#timing: time left for rx_worker  %f ms\n", time_to_start*1000);
@@ -115,6 +116,7 @@ void usrp_rx_worker(
         while(samples_remaining_to_stream > max_samples_per_stream) {
             usrp->issue_stream_cmd(stream_cmd); 
             samples_remaining_to_stream -= max_samples_per_stream;
+            usleep(usecs);
 	    debugt = usrp->get_time_now().get_real_secs();
 	    DEBUG_PRINT("RX_WORKER: issued stream command %2.4f\n",debugt);//,++counter);
         }
@@ -124,6 +126,7 @@ void usrp_rx_worker(
         stream_cmd.stream_now = true;
         stream_cmd.num_samps = samples_remaining_to_stream;
         usrp->issue_stream_cmd(stream_cmd); 
+        usleep(usecs);
 	debugt = usrp->get_time_now().get_real_secs();
 	DEBUG_PRINT("RX_WORKER: issued last stream command %2.4f\n",debugt);//,++counter);
     }
