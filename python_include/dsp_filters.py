@@ -57,7 +57,7 @@ def rect_filter_s0(nTaps, channelFreqVec, samplingRate):
     return filterData
 
 
-def kaiser_filter_r0(nTaps, channelFreqVec, normalize = True, beta=5, gain=3.73):Add commentMore actions
+def kaiser_filter_r0(nTaps, channelFreqVec, normalize = True, beta=5, gain=3.73):
     # gain = 3.73 # was 3.5 before
     filterData = np.zeros((len(channelFreqVec), nTaps,2), dtype=np.float32)
     m = nTaps - 1
