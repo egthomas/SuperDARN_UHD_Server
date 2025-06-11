@@ -3835,18 +3835,23 @@ class RadarChannelHandler:
  
     def SetInactiveHandler(channelObject, rmsg):
         RHM = channelObject.parent_RadarHardwareManager
+        RHM.logger.info('ROS:SET_INACTIVE received for channel {}'.format(RHM.channels.index(channelObject)))
+        RHM.logger.info('RHM active channels objects: {}'.format(RHM.active_channels))
 
         if channelObject in RHM.active_channels:
             RHM.logger.info('ROS:SET_INACTIVE removing channel {} from RHM.active_channels'.format(RHM.channels.index(channelObject)))
-            RHM.active_channels.remove(channelObject)
-           
-        if channelObject in RHM.channels:
+            try:
+               RHM.active_channels.remove(channelObject)
+            except:
+               RHM.logger.info('ROS:SET_INACTIVE failed to remove channel {} from RHM.active_channels'.format(RHM.channels.index(channelObject)))
+
+        if channelObject in np.concatenate(RHM.channels).tolist():
             RHM.logger.info('ROS:SET_INACTIVE removing channel {} from HardwareManager'.format(RHM.channels.index(channelObject)))
             RHM.channels.remove(channelObject)
 
             RHM.nRegisteredChannels -= 1
-            if RHM.nRegisteredChannels == 0: 
-                RHM.logger.debug("No channels left, removing commonChannelParameter") 
+            if RHM.nRegisteredChannels == 0:
+                RHM.logger.debug("No channels left, removing commonChannelParameter")
                 RHM.commonChannelParameter = {}
 
         channelObject.active = False
