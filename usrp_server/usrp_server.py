@@ -2562,6 +2562,11 @@ class RadarChannelHandler:
         # TODO add compatibility check in parameter prediction function
         self.received_first_SETPAR = True
         RHM = self.parent_RadarHardwareManager
+
+        self.logger.debug("Ch {}: waiting for Parameter semaphore...".format(self.cnum))
+        RHM.set_par_semaphore.acquire()
+        self.logger.debug("Ch {}: acquired semaphore, setting parameter".format(self.cnum))
+
         RHM.n_SetParameterHandlers_active += 1
 
         if self.scanManager.isPrePeriod:
@@ -2575,6 +2580,8 @@ class RadarChannelHandler:
            self.ctrlprm_struct.receive(self.conn)
            self.logger.debug("ch {}: Received from ROS for swing {} (init SetPar is only stored): tbeam={}, rbeam={}, tfreq={}, rfreq={}".format(self.cnum, current_swing, self.ctrlprm_struct.payload['tbeam'], self.ctrlprm_struct.payload['rbeam'], self.ctrlprm_struct.payload['tfreq'], self.ctrlprm_struct.payload['rfreq']))
            RHM.n_SetParameterHandlers_active -= 1
+           RHM.set_par_semaphore.release()
+           self.logger.debug("Ch {}: released semaphore".format(self.cnum))
            return RMSG_SUCCESS
 
 
@@ -2587,10 +2594,6 @@ class RadarChannelHandler:
         # period not yet triggered
         if self.state[current_swing] == CS_INACTIVE:# or self.active_state == CS_READY:#  not needed with change of site.c
 
-           self.logger.debug("Ch {}: waiting for Parameter semaphore...".format(self.cnum))
-           RHM.set_par_semaphore.acquire()
-           self.logger.debug("Ch {}: acquired semaphore, setting parameter".format(self.cnum))
-           
            if self.state[current_swing] == CS_READY:
               self.logger.debug("Channel already initialized, but not triggered, Reinitializing it...")
               self.state[current_swing] = CS_INACTIVE
@@ -2601,6 +2604,8 @@ class RadarChannelHandler:
            if not self.CheckChannelCompatibility(): # TODO  for two swings and reset after transmit?
               self.logger.debug("CheckChannelCompatability FAIL")
               RHM.n_SetParameterHandlers_active -= 1
+              RHM.set_par_semaphore.release()
+              self.logger.debug("Ch {}: released semaphore".format(self.cnum))
               return RMSG_FAILURE
               
            if self not in self.parent_RadarHardwareManager.newChannelList:
@@ -2609,9 +2614,6 @@ class RadarChannelHandler:
            else:
               self.logger.debug("Ch {} already in newChannelList ".format(self.cnum))
 
-           RHM.set_par_semaphore.release()
-           self.logger.debug("Ch {}: released semaphore".format(self.cnum))
- 
         # in middle of scan, period already triggered. only compare with prediction
         elif self.state[current_swing] == CS_PROCESSING or self.state[current_swing] == CS_LAST_SWING: 
            # TODO something here is wrong: uafscan with --onesec has CS_LAST_SWING but --fast not
@@ -2635,6 +2637,8 @@ class RadarChannelHandler:
            self.logger.error("ROS:SetParameter: Active state is {} (current_swing={}, activeSwing={} ). Dont know what to do...".format(self.state[current_swing], self.swingManager.activeSwing,  self.active_state))
            self.logger.error("ROS:SetParameter: Exit usrp_server...")
            RHM.n_SetParameterHandlers_active -= 1
+           RHM.set_par_semaphore.release()
+           self.logger.debug("Ch {}: released semaphore".format(self.cnum))
            return RMSG_FAILURE
            self.parent_RadarHardwareManager.exit()
 
@@ -2642,9 +2646,13 @@ class RadarChannelHandler:
         if (self.rnum < 0 or self.cnum < 0):
            self.logger.error("SET_PARAMETER: Invalid radar or channel number: rnum={}, cnum={}".format(self.rnum, self.cnum))
            RHM.n_SetParameterHandlers_active -= 1
+           RHM.set_par_semaphore.release()
+           self.logger.debug("Ch {}: released semaphore".format(self.cnum))
            return RMSG_FAILURE
 
         RHM.n_SetParameterHandlers_active -= 1
+        RHM.set_par_semaphore.release()
+        self.logger.debug("Ch {}: released semaphore".format(self.cnum))
         return RMSG_SUCCESS
 
     def CheckChannelCompatibility(self):
